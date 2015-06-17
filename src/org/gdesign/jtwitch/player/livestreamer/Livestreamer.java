@@ -3,7 +3,6 @@ package org.gdesign.jtwitch.player.livestreamer;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.util.Observable;
-import java.util.Observer;
 import java.util.Properties;
 import java.util.Random;
 
