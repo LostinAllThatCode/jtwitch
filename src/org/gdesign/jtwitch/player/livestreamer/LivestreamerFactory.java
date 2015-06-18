@@ -47,7 +47,11 @@ public class LivestreamerFactory {
 		instance.setStream(stream);
 		instance.setPort(randomPort);
 		instance.start();
-		
+		try {
+			Thread.sleep(Integer.valueOf(config.getProperty("livestreamer-http-wait")));
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return instance;
 	}
 	

@@ -33,7 +33,6 @@ public class JTwitch extends Observable{
                 }
             });
         } else {
-        	//NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), config.getProperty("videolan"));
         	LogManager.getLogger().error("Can't find vlc natives.");
         }
 	}

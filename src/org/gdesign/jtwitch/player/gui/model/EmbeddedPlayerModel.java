@@ -27,7 +27,7 @@ public class EmbeddedPlayerModel {
 			}
 		} catch (LivestreamerAlreadyRunningException e) {
 			e.printStackTrace();
-		}
+		} 
 		return null;
 	}
 	
