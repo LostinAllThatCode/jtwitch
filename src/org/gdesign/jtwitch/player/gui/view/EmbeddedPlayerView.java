@@ -94,6 +94,7 @@ public class EmbeddedPlayerView extends JPanel{
 		// TODO Fix resizing issue.	
 		public MouseClickOverlay(Window owner) {
 	        super(owner);
+	        setBackground(new Color(0,0,0,0));
 		}
 
 	}
