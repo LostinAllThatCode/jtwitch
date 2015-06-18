@@ -35,6 +35,7 @@ public class EmbeddedPlayerView extends JPanel{
 				return new Win32FullScreenStrategy(j);
 			};
 		};
+		
 		embeddedPlayer.getMediaPlayer().setOverlay(mouseClickOverlay);
 		
 		maxVolume = 200;

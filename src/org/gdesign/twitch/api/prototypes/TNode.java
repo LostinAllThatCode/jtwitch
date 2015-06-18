@@ -17,6 +17,9 @@ public abstract class TNode {
 
 	protected abstract void decode();
 	
+	public Object get(String key){
+		return values.get(key);
+	}
 	
 	protected void setValue(String s, JSONObject o){
 		values.put(s, o.get(s));

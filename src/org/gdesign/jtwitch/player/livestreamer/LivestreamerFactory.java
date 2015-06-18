@@ -16,6 +16,10 @@ public class LivestreamerFactory {
 	
 	private static HashMap<String, Livestreamer> instances;
 	
+	/** 
+	 * 	Its possible to run multiple livestreamer instances at once.
+	 */
+	
 	static {
 		random 			= new Random();
 		config 			= new Configuration("livestreamer.properties");		
@@ -53,6 +57,15 @@ public class LivestreamerFactory {
 		String path = config.getProperty("livestreamer");
 		String args = config.getProperty("livestreamer-args");
 		return path + args;
+	}
+	
+	public static Livestreamer getInstance(String name) {
+		return instances.get(name);
+	}
+	
+	public static void removeInstance(Livestreamer instance){
+		instance.stopStream();
+		instances.remove(instance.getStream());
 	}
 	
 	private static boolean isRunning(String stream){

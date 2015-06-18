@@ -29,8 +29,8 @@ public class ChannelListModel {
 					public void run() {
 						try {
 							for (TChannel channel : new TwitchAPI().getFollows(username).getChannels()){
-								if (getChannel(channel.get("display_name")) == null) {
-									ChannelModel m = new ChannelModel(channel.get("display_name"));
+								if (getChannel(channel.get("display_name").toString()) == null) {
+									ChannelModel m = new ChannelModel(channel.get("display_name").toString());
 									m.addModelListener(listener);
 									addChannel(m);
 								}

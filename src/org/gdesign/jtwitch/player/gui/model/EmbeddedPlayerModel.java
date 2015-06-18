@@ -1,6 +1,8 @@
 package org.gdesign.jtwitch.player.gui.model;
 
-//import javax.swing.event.SwingPropertyChangeSupport;
+import javax.swing.event.SwingPropertyChangeSupport;
+
+import java.beans.PropertyChangeListener;
 
 import org.gdesign.jtwitch.player.livestreamer.Livestreamer;
 import org.gdesign.jtwitch.player.livestreamer.LivestreamerFactory;
@@ -9,25 +11,19 @@ import org.gdesign.jtwitch.player.livestreamer.exception.LivestreamerAlreadyRunn
 
 public class EmbeddedPlayerModel {
 
+	private SwingPropertyChangeSupport propertyChange;
 	private Livestreamer instance;	
 
 	public EmbeddedPlayerModel() {
-		//propertyChange = new SwingPropertyChangeSupport(this);
+		propertyChange = new SwingPropertyChangeSupport(this);
 	}
 	
 	public String startInstance(String... args){
 		try {			
-			if (instance == null){
-				instance = LivestreamerFactory.startInstance(args);
-				if (instance != null) {
-					return instance.getLocalhost()+":"+instance.getPort();
-				}
-			} else {
-				instance.stopStream();
-				instance = LivestreamerFactory.startInstance(args);
-				if (instance != null) {
-					return instance.getLocalhost()+":"+instance.getPort();
-				}
+			instance = LivestreamerFactory.startInstance(args);
+			if (instance != null) {
+				propertyChange.firePropertyChange("streamStarted", "null", instance.getStream());
+				return instance.getMRL();
 			}
 		} catch (LivestreamerAlreadyRunningException e) {
 			e.printStackTrace();
@@ -35,8 +31,11 @@ public class EmbeddedPlayerModel {
 		return null;
 	}
 	
-	public void stop(){
-		if (instance != null) instance.stopStream();
-	}
+	public Livestreamer getInstance(){
+		return instance;
+	}	
 	
+	public void addModelListener(PropertyChangeListener prop) {
+		propertyChange.addPropertyChangeListener(prop);
+    }
 }

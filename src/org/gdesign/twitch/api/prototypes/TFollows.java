@@ -21,8 +21,8 @@ public class TFollows extends TNode{
 		return channels;
 	}
 	
-	public TChannel getChannel(String channel){
-		return (TChannel) values.get(channel.toLowerCase());
+	public TChannel getChannel(Object channel){
+		return (TChannel) values.get(channel.toString().toLowerCase());
 	}
 	
 	

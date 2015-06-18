@@ -40,6 +40,7 @@ public class MainModel {
 	public void addModelListener(PropertyChangeListener prop) {
 		propertyChange.addPropertyChangeListener(prop);
 		channelListModel.addModelListener(prop);
+		embeddedPlayerModel.addModelListener(prop);
     }
 	
 	public EmbeddedPlayerModel getPlayerModel(){

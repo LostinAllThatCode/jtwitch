@@ -75,6 +75,10 @@ public class Livestreamer extends Thread implements Runnable{
 		this.localhost = localhost;
 	}
 	
+	public String getMRL(){
+		return localhost+":"+port;
+	}
+	
 	
 
 }
