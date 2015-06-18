@@ -14,6 +14,8 @@ public class LivestreamerFactory {
 	private static Random random;
 	private static Properties config;
 	
+	private static String quality;
+	
 	private static HashMap<String, Livestreamer> instances;
 	
 	/** 
@@ -23,6 +25,7 @@ public class LivestreamerFactory {
 	static {
 		random 			= new Random();
 		config 			= new Configuration("livestreamer.properties");		
+		quality 		= config.getProperty("livestreamer-quality");
 		instances 		= new HashMap<>();
 	}
 	
@@ -71,4 +74,9 @@ public class LivestreamerFactory {
 	private static boolean isRunning(String stream){
 		return instances.containsKey(stream); 
 	}
+	
+	public static String getDefaultQuality(){
+		return quality;
+	}
+	
 }

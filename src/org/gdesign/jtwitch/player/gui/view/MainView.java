@@ -17,7 +17,7 @@ public class MainView extends JFrame{
 
 	public MainView() {
 		setLayout(new BorderLayout());
-		setTitle("JTwitch Player (0.1.alhpa)");
+		setTitle("JTwitch Player (0.1.alpha)");
     	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setBounds(0, 0, 1280, 640);
 		

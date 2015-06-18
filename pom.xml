@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.0.1-alpha</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -20,6 +20,9 @@
         		<descriptorRefs>
           			<descriptorRef>jar-with-dependencies</descriptorRef>
         		</descriptorRefs>
+        		<appendAssemblyId>false</appendAssemblyId>
+        		<finalName>${project.build.finalName}</finalName>
+        		<outputDirectory>${project.basedir}</outputDirectory>
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>

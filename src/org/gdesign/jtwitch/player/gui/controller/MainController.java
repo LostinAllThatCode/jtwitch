@@ -88,7 +88,7 @@ public class MainController implements PropertyChangeListener{
 				if (channel.isOnline()){
 					if (streamer == null){
 						e.getComponent().setEnabled(false);
-						String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),"source");
+						String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
 						String mediaOptions = "--network-cache=5000";
 						if (mrl != null) {
 							view.getPlayerView().playMedia(mrl, mediaOptions);
