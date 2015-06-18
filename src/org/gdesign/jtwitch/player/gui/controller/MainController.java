@@ -2,9 +2,6 @@ package org.gdesign.jtwitch.player.gui.controller;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.MouseInfo;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -19,7 +16,6 @@ import org.gdesign.jtwitch.player.gui.model.MainModel;
 import org.gdesign.jtwitch.player.gui.view.ChannelView;
 import org.gdesign.jtwitch.player.gui.view.EmbeddedPlayerView;
 import org.gdesign.jtwitch.player.gui.view.MainView;
-import org.gdesign.jtwitch.player.gui.view.EmbeddedPlayerView.MouseClickOverlay;
 
 public class MainController implements PropertyChangeListener{
 	
