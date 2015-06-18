@@ -20,10 +20,10 @@ import org.json.simple.parser.ParseException;
 
 public class TwitchAPI {
 	
-	private static ContainerFactory containerFactory;
-	private static JSONParser jsonParserInstance;
+	private ContainerFactory containerFactory;
+	private JSONParser jsonParserInstance;
 	
-	static { 
+	public TwitchAPI() {
 		jsonParserInstance = new JSONParser(); 
 		new ContainerFactory(){
 		    @Override
@@ -38,26 +38,26 @@ public class TwitchAPI {
 		      return new LinkedHashMap();
 		    }
 		                        
-		  };		
+		  };	
 	}
 	
 	public static enum JSONRequest {
 		CHANNEL, FOLLOWS, STREAM
 	}	
 	
-	public static TFollows getFollows(String user) throws ParseException{
+	public TFollows getFollows(String user) throws ParseException{
 		return new TFollows((JSONObject) get(user,JSONRequest.FOLLOWS));
 	}
 	
-	public static TChannel getChannel(String channel) throws ParseException{
+	public TChannel getChannel(String channel) throws ParseException{
 		return new TChannel((JSONObject) get(channel,JSONRequest.CHANNEL));
 	}
 	
-	public static TStream getStream(String stream) throws ParseException{
+	public TStream getStream(String stream) throws ParseException{
 		return new TStream((JSONObject) get(stream,JSONRequest.STREAM));
 	}
 	
-	private static Object get(String keyword, JSONRequest request) throws ParseException {
+	private synchronized Object get(String keyword, JSONRequest request) throws ParseException {
 		switch (request) {
 			case CHANNEL:
 				return jsonParserInstance.parse(request("https://api.twitch.tv/kraken/channels/"+keyword.toLowerCase()),containerFactory);
@@ -71,7 +71,7 @@ public class TwitchAPI {
 		return null;
 	}
 	
-	public static String request(String request_url) throws ParseException{
+	public String request(String request_url) throws ParseException{
 		try {
 			URL url = new URL( request_url );
 			

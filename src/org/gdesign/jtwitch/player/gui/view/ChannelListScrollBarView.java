@@ -1,4 +1,4 @@
-package org.gdesign.jtwitch.player.gui.templates;
+package org.gdesign.jtwitch.player.gui.view;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -9,7 +9,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.plaf.basic.BasicScrollBarUI;
 
-public class ChannelScrollBar extends BasicScrollBarUI {
+public class ChannelListScrollBarView extends BasicScrollBarUI {
 	
 	@Override
 	protected void paintTrack(Graphics g, JComponent c,
