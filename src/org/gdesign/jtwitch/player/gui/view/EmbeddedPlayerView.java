@@ -11,9 +11,14 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import org.gdesign.utils.SystemInfo;
+import org.gdesign.utils.SystemInfo.OperatingSystem;
+
 import uk.co.caprica.vlcj.component.*;
+import uk.co.caprica.vlcj.player.MediaPlayer;
 import uk.co.caprica.vlcj.player.embedded.FullScreenStrategy;
 import uk.co.caprica.vlcj.player.embedded.windows.Win32FullScreenStrategy;
+import uk.co.caprica.vlcj.player.embedded.x.XFullScreenStrategy;
 
 public class EmbeddedPlayerView extends JPanel{
 
@@ -31,9 +36,18 @@ public class EmbeddedPlayerView extends JPanel{
 		
 		embeddedPlayer = new EmbeddedMediaPlayerComponent(){			
 			private static final long serialVersionUID = 1L;
+			
 			protected FullScreenStrategy onGetFullScreenStrategy() {
-				return new Win32FullScreenStrategy(j);
+				if (SystemInfo.getOS().equals(OperatingSystem.WIN)) return new Win32FullScreenStrategy(j);
+				else if (SystemInfo.getOS().equals(OperatingSystem.UNIX)) return new XFullScreenStrategy(j);
+				else return null;
 			};
+			
+			@Override
+			  public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
+			    System.out.println("VLCPlayer: videoOutput");
+			    mediaPlayer.setVolume(15);
+			  }
 		};
 		
 		embeddedPlayer.getMediaPlayer().setOverlay(mouseClickOverlay);
@@ -55,7 +69,6 @@ public class EmbeddedPlayerView extends JPanel{
 	
 	public void playMedia(String mrl, String mediaOptions){
 		embeddedPlayer.getMediaPlayer().playMedia(mrl, mediaOptions);
-		embeddedPlayer.getMediaPlayer().enableOverlay(true);
 	}
 	
 	public void stopMedia(){

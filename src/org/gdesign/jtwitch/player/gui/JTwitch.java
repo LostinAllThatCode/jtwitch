@@ -10,6 +10,7 @@ import org.gdesign.jtwitch.player.gui.controller.MainController;
 import org.gdesign.jtwitch.player.gui.model.MainModel;
 import org.gdesign.jtwitch.player.gui.view.MainView;
 import org.gdesign.utils.Configuration;
+import org.gdesign.utils.SystemInfo;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -22,6 +23,8 @@ public class JTwitch extends Observable{
 	public static void main(String[] args) {
 		System.setProperty("awt.useSystemAAFontSettings","true");
 		System.setProperty("swing.aatext", "true");
+		
+		LogManager.getLogger().debug(SystemInfo.getOS());
 		
 		final Properties config = new Configuration("jtwitch.properties");
 		
