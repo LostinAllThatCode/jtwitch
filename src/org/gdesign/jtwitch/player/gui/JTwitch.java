@@ -4,15 +4,15 @@ import java.util.Observable;
 import java.util.Properties;
 
 import javax.swing.*;
-import org.apache.logging.log4j.LogManager;
 
+import org.apache.logging.log4j.LogManager;
 import org.gdesign.jtwitch.player.gui.controller.MainController;
 import org.gdesign.jtwitch.player.gui.model.MainModel;
 import org.gdesign.jtwitch.player.gui.view.MainView;
 import org.gdesign.utils.Configuration;
 
-
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
+import uk.co.caprica.vlcj.runtime.RuntimeUtil;
 
 public class JTwitch extends Observable{
 
@@ -25,8 +25,7 @@ public class JTwitch extends Observable{
 		
 		final Properties config = new Configuration("jtwitch.properties");
 		
-        boolean found = new NativeDiscovery().discover();
-        if (found) {
+        if (checkVLCj()) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -37,5 +36,14 @@ public class JTwitch extends Observable{
         	//NativeLibrary.addSearchPath(RuntimeUtil.getLibVlcLibraryName(), config.getProperty("videolan"));
         	LogManager.getLogger().error("Can't find vlc natives.");
         }
+	}
+	
+	
+	public static boolean checkVLCj(){
+		if (new NativeDiscovery().discover()){
+			LogManager.getLogger().debug("libvlcj vlc native path: "+RuntimeUtil.getLibVlcLibraryName());
+			return true;
+		}
+		return false;
 	}
 }

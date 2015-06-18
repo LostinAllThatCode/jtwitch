@@ -8,7 +8,6 @@ import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
-import org.apache.logging.log4j.LogManager;
 import org.gdesign.jtwitch.player.gui.model.ChannelListModel;
 import org.gdesign.jtwitch.player.gui.model.ChannelModel;
 import org.gdesign.jtwitch.player.gui.model.EmbeddedPlayerModel;
@@ -38,7 +37,6 @@ public class MainController implements PropertyChangeListener{
 
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		LogManager.getLogger().trace(evt);
 		if (evt.getSource().getClass().equals(ChannelListModel.class)){
 			if (evt.getPropertyName().compareTo("addChannel") == 0){
 				ChannelModel cm = (ChannelModel) evt.getNewValue();
@@ -98,7 +96,7 @@ public class MainController implements PropertyChangeListener{
 						if (!streamer.getStream().equals("twitch.tv/"+channel.getName())) {
 							LivestreamerFactory.removeInstance(streamer);
 							e.getComponent().setEnabled(false);
-							String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),"source");
+							String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
 							String mediaOptions = "--network-cache=5000";
 							if (mrl != null) {
 								view.getPlayerView().playMedia(mrl, mediaOptions);
@@ -144,7 +142,6 @@ public class MainController implements PropertyChangeListener{
 		
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent e) {
-			LogManager.getLogger().debug(e.getComponent().getClass());
 			if (e.getWheelRotation() < 0) view.getPlayerView().setVolume(view.getPlayerView().getVolume() + 10); 
 			else view.getPlayerView().setVolume(view.getPlayerView().getVolume() - 10);
 		}

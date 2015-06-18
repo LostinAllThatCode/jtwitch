@@ -49,7 +49,6 @@ public class LivestreamerFactory {
 		instance.start();
 		
 		return instance;
-		
 	}
 	
 	private static int generateRandomPort(int start, int range){

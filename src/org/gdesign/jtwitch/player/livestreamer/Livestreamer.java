@@ -26,7 +26,6 @@ public class Livestreamer extends Thread implements Runnable{
 	@Override
 	public void run() {
 		try {
-			LogManager.getLogger().debug("Starting livestreamer http service for "+stream+"...");
 			LogManager.getLogger().trace(ArrayUtils.toString(cmd));
 			
 			ProcessBuilder pb = new ProcessBuilder(cmd);
@@ -34,11 +33,12 @@ public class Livestreamer extends Thread implements Runnable{
 	        InputStreamReader reader = new InputStreamReader(process.getInputStream());
 	        int ch;
 	        String line = "";
-	        while((ch = reader.read())!= -1 && !isInterrupted()){
+	        while((ch = reader.read()) != -1 && !isInterrupted()){
 	        	line += (char) ch;
-	        	if (ch == '\n') {
-	        		LogManager.getLogger().trace(line);
-	        		if (line.contains("HTTP connection closed") || line.contains("Stream ended") || line.contains("error") ) break;
+	        	if (line.startsWith("[cli]") && line.endsWith("\n")){
+	        		String output = line.substring(5, line.length()-2);
+	        		LogManager.getLogger().trace(output);
+	        		if (output.contains("HTTP connection closed") || output.contains("Stream ended") || output.contains("error") ) break;
 	        		line = "";
 	        	}
 	        }			   
