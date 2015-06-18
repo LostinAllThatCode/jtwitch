@@ -22,7 +22,7 @@
         		</descriptorRefs>
         		<appendAssemblyId>false</appendAssemblyId>
         		<finalName>${project.build.finalName}</finalName>
-        		<outputDirectory>${project.basedir}</outputDirectory>
+        		<outputDirectory>${project.basedir}/release/</outputDirectory>
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>
