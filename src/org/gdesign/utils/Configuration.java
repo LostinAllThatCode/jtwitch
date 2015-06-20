@@ -38,8 +38,7 @@ public class Configuration extends Properties{
 		return path.replace("\\", "/\\"); 
 	}
 	
-	public static void checkConfig(Properties c1, Properties c2){
-				
+	public static void checkConfig(Properties c1, Properties c2){				
 	}
 	
 	public static boolean isRunningFromJar() {

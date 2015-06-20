@@ -1,5 +1,6 @@
 package org.gdesign.jtwitch.player.gui;
 
+import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Properties;
 
@@ -11,6 +12,7 @@ import org.gdesign.jtwitch.player.gui.model.MainModel;
 import org.gdesign.jtwitch.player.gui.view.MainView;
 import org.gdesign.utils.Configuration;
 import org.gdesign.utils.SystemInfo;
+import org.json.simple.parser.ParseException;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 import uk.co.caprica.vlcj.runtime.RuntimeUtil;
@@ -32,12 +34,34 @@ public class JTwitch extends Observable{
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                	new MainController(new MainView(), new MainModel(config.getProperty("username")));
+                	try {
+						new JTwitch();
+					} catch (ParseException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
                 }
             });
         } else {
         	LogManager.getLogger().error("Can't find vlc natives.");
         }
+	}
+	
+	public JTwitch() throws ParseException {
+		JFrame frame = new JFrame("JTwitch Player (0.1.alpha)");
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setBounds(0, 0, 1280, 640);
+		frame.setLocationRelativeTo(null);
+		frame.setVisible(true);
+		
+		MainView mainView 	= new MainView(frame);
+		MainModel mainModel	= new MainModel("its1z0");
+		MainController controller = new MainController(mainView, mainModel);
+		
+		frame.add(mainView);
+		
+		controller.updateGUI(5000);
+
 	}
 	
 	

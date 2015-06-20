@@ -60,7 +60,6 @@ public class ChannelListView extends JScrollPane{
 	}
 	
 	public void addChannel(ChannelView view){
-		view.addMouseListener(getMouseListeners()[0]);
 		channelList.add(view);
 	}
 	

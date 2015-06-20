@@ -14,8 +14,6 @@ public class ChannelListScrollBarView extends BasicScrollBarUI {
 	@Override
 	protected void paintTrack(Graphics g, JComponent c,
 			Rectangle trackBounds) {
-		// TODO Auto-generated method stub
-		//super.paintTrack(g, c, trackBounds);
 		g.setColor(Color.DARK_GRAY);
 		g.fillRect(0, 0, trackBounds.width, trackBounds.height);
 	}

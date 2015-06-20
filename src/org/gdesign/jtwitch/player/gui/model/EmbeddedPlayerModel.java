@@ -22,7 +22,7 @@ public class EmbeddedPlayerModel {
 		try {			
 			instance = LivestreamerFactory.startInstance(args);
 			if (instance != null) {
-				propertyChange.firePropertyChange("streamStarted", "null", instance.getStream());
+				propertyChange.firePropertyChange("streamStarted", "null", instance.getStream().replace("twitch.tv/", ""));
 				return instance.getMRL();
 			}
 		} catch (LivestreamerAlreadyRunningException e) {

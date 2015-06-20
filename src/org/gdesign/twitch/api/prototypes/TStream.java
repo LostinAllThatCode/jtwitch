@@ -7,10 +7,6 @@ public class TStream extends TNode{
 	public TStream(JSONObject obj) {
 		super(obj);
 	}
-
-	public String get(String key){
-		return values.get(key).toString();
-	}
 	
 	@Override
 	protected void decode() {

@@ -14,15 +14,25 @@ public abstract class TNode {
 		this.values = new HashMap<String, Object>();
 		decode();
 	}
-
+	
 	protected abstract void decode();
-	
-	public Object get(String key){
-		return values.get(key);
-	}
-	
+
 	protected void setValue(String s, JSONObject o){
 		values.put(s, o.get(s));
+	}
+	
+	public JSONObject getJSONObject(){
+		return self;
+	}
+	
+	public Integer getInt(String key){
+		Object obj = values.get(key);
+		if (obj == null) return 0; else return Integer.valueOf(obj.toString());
+	}
+
+	public String getString(String key){
+		Object obj = values.get(key);
+		if (obj == null) return ""; else return obj.toString();
 	}
 	
 	@Override

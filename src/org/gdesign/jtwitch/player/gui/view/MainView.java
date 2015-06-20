@@ -4,38 +4,28 @@ import java.awt.BorderLayout;
 import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
-public class MainView extends JFrame{
+public class MainView extends JPanel{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4716184426392503733L;
 
 	private ChannelListView channelListview;
 	private EmbeddedPlayerView playerView;
 
-	public MainView() {
+	public MainView(JFrame frame) {
 		setLayout(new BorderLayout());
-		setTitle("JTwitch Player (0.1.alpha)");
-    	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setBounds(0, 0, 1280, 640);
 		
 		channelListview 	= new ChannelListView();
-		playerView 			= new EmbeddedPlayerView(this);
+		playerView 			= new EmbeddedPlayerView(frame);
 		
 		add(channelListview,BorderLayout.WEST);
-		add(playerView,BorderLayout.CENTER);
-		
-		setLocationRelativeTo(null);
-		setVisible(true);
-	
+		add(playerView,BorderLayout.CENTER);	
 	}
 	
 	public ChannelListView getChannelListView(){
 		return channelListview;
 	}
-	
 	
 	public EmbeddedPlayerView getPlayerView(){
 		return playerView;

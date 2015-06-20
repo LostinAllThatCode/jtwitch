@@ -25,12 +25,15 @@ public class EmbeddedPlayerView extends JPanel{
 	private EmbeddedMediaPlayerComponent embeddedPlayer;
 	private static final long serialVersionUID = 1L;	
 	private Window mouseClickOverlay;
-	private int maxVolume;
+	private int maxVolume,defVolume;
 
 	private JLabel info;
 	
 	public EmbeddedPlayerView(final JFrame j){
 		setLayout(new BorderLayout());
+		
+		defVolume = 15;
+		maxVolume = 200;
 		
 		mouseClickOverlay = new MouseClickOverlay(j);
 		
@@ -46,13 +49,11 @@ public class EmbeddedPlayerView extends JPanel{
 			@Override
 			  public void videoOutput(MediaPlayer mediaPlayer, int newCount) {
 			    System.out.println("VLCPlayer: videoOutput");
-			    mediaPlayer.setVolume(15);
+			    mediaPlayer.setVolume(defVolume);
 			  }
 		};
 		
 		embeddedPlayer.getMediaPlayer().setOverlay(mouseClickOverlay);
-		
-		maxVolume = 200;
 		
 		JPanel controls = new JPanel();
 		controls.setBackground(Color.DARK_GRAY);
@@ -76,7 +77,7 @@ public class EmbeddedPlayerView extends JPanel{
 	}
 	
 	public void setVolume(int value){
-		embeddedPlayer.getMediaPlayer().setVolume((value >= maxVolume ? maxVolume : value));
+		embeddedPlayer.getMediaPlayer().setVolume(defVolume = (value >= maxVolume ? maxVolume : value));
 	}
 	
 	public int getVolume(){

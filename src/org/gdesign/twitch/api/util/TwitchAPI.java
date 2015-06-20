@@ -57,7 +57,7 @@ public class TwitchAPI {
 		return new TStream((JSONObject) get(stream,JSONRequest.STREAM));
 	}
 	
-	private synchronized Object get(String keyword, JSONRequest request) throws ParseException {
+	private Object get(String keyword, JSONRequest request) throws ParseException {
 		switch (request) {
 			case CHANNEL:
 				return jsonParserInstance.parse(request("https://api.twitch.tv/kraken/channels/"+keyword.toLowerCase()),containerFactory);

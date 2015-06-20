@@ -8,6 +8,7 @@ import java.awt.event.MouseWheelEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
+import org.apache.logging.log4j.LogManager;
 import org.gdesign.jtwitch.player.gui.model.ChannelListModel;
 import org.gdesign.jtwitch.player.gui.model.ChannelModel;
 import org.gdesign.jtwitch.player.gui.model.EmbeddedPlayerModel;
@@ -17,17 +18,24 @@ import org.gdesign.jtwitch.player.gui.view.EmbeddedPlayerView;
 import org.gdesign.jtwitch.player.gui.view.MainView;
 import org.gdesign.jtwitch.player.livestreamer.Livestreamer;
 import org.gdesign.jtwitch.player.livestreamer.LivestreamerFactory;
+import org.gdesign.twitch.api.prototypes.TChannel;
+import org.gdesign.twitch.api.prototypes.TStream;
+import org.gdesign.twitch.api.util.TwitchAPI;
+import org.json.simple.parser.ParseException;
 
 public class MainController implements PropertyChangeListener{
 	
 	private MainView view;
 	private MainModel model;
+	private TwitchAPI twitch;
+	private ChannelMouseListener listener;
 	
 	public MainController(MainView view, MainModel model) {
 		this.view = view;
 		this.model = model;
+		this.twitch = new TwitchAPI();
 		
-		ChannelMouseListener listener = new ChannelMouseListener();
+		listener = new ChannelMouseListener();
 		
 		this.view.addMouseListener(listener);
 		this.view.addMouseWheelListener(listener);
@@ -35,6 +43,50 @@ public class MainController implements PropertyChangeListener{
 		this.model.addModelListener(this);
 	}
 
+	public void updateGUI(long interval) throws ParseException{
+		new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while (true) {
+					try {
+						if (model.getChannelListModel().getChannelCount() == 0) {
+								for (TChannel channel : twitch.getFollows("its1z0").getChannels()){
+									String channelName = channel.getString("display_name");
+									if (channelName.length() != 0){
+										ChannelModel m = new ChannelModel(channelName);
+										m.addModelListener(MainController.this);
+										model.getChannelListModel().addChannel(m);
+														
+										TStream stream = twitch.getStream(m.getName());
+										if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
+										if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
+										if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+										m.fireUpdate();
+									}
+									view.getChannelListView().sortChannels(model.getChannelListModel().getSortedChannels());
+								}
+						} else {
+							for (ChannelModel m : model.getChannelListModel().getChannels()){
+								TStream stream = twitch.getStream(m.getName());
+								if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
+								if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
+								if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+								m.fireUpdate();
+							}
+							view.getChannelListView().sortChannels(model.getChannelListModel().getSortedChannels());
+							
+						}
+					} catch (ParseException e) {
+						LogManager.getLogger().error(e.getMessage());
+					}
+					view.repaint();
+				}
+			}
+		}).start();
+
+	}
+	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		if (evt.getSource().getClass().equals(ChannelListModel.class)){
@@ -47,27 +99,33 @@ public class MainController implements PropertyChangeListener{
 					cv.setChannelViewers(String.valueOf(cm.getViewers()));
 					cv.setChannelAction(cm.getAction());
 					cv.setOnline(cm.isOnline());
+					cv.addMouseListener(listener);
 					view.getChannelListView().addChannel(cv);
+					LogManager.getLogger().trace("Added new channel to view. "+cm);
 				}
 			}
 		} else if (evt.getSource().getClass().equals(ChannelModel.class)){
-			if (evt.getNewValue() != null){
+			if (evt.getNewValue() != null && evt.getPropertyName().compareTo("updatedChannel") == 0){
 				ChannelModel cm = (ChannelModel) evt.getSource();
 				ChannelView cv 	= view.getChannelListView().getChannel(cm.getName());
 				if (cm != null && cv != null) {
-					if (evt.getPropertyName().equals("gameChanged")) cv.setChannelGame((String) evt.getNewValue());
-					else if (evt.getPropertyName().equals("viewersChanged")) cv.setChannelViewers(evt.getNewValue().toString());
-					else if (evt.getPropertyName().equals("actionChanged")) cv.setChannelAction((String) evt.getNewValue());
-					else if (evt.getPropertyName().equals("stateChanged")) cv.setOnline((boolean) evt.getNewValue());
-					else if (evt.getPropertyName().equals("sortChannels")) view.getChannelListView().sortChannels(model.getSortedChannels());
+					cv.setChannelGame(cm.getGame());
+					cv.setChannelViewers(String.valueOf(cm.getViewers()));
+					cv.setChannelAction(cm.getAction());
+					cv.setOnline(cm.isOnline());
+					LogManager.getLogger().trace("Updated channel ."+cm);
 				}
 			}
 		} else if (evt.getSource().getClass().equals(EmbeddedPlayerModel.class)){
 			if (evt.getNewValue() != null){
-				EmbeddedPlayerModel pm = model.getPlayerModel();
+				EmbeddedPlayerModel pm = model.getEmbeddedPlayerModel();
 				EmbeddedPlayerView pv = view.getPlayerView();
 				if (pv != null && pm != null){
-					if (evt.getPropertyName().equals("streamStarted")) pv.setDescription((String) evt.getNewValue());
+					if (evt.getPropertyName().equals("streamStarted")) {
+						pv.setDescription((String) evt.getNewValue());
+						LogManager.getLogger().trace("Stream started on embebbed player. "+evt.getNewValue());
+					}
+					
 				}
 			}
 		}
@@ -81,12 +139,12 @@ public class MainController implements PropertyChangeListener{
 		@Override
 		public void mouseClicked(MouseEvent e) {
 			if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-				ChannelModel channel = model.getChannel(e.getComponent().getName());
-				Livestreamer streamer = model.getPlayerModel().getInstance();
+				ChannelModel channel = model.getChannelListModel().getChannel(e.getComponent().getName());
+				Livestreamer streamer = model.getEmbeddedPlayerModel().getInstance();
 				if (channel.isOnline()){
 					if (streamer == null){
 						e.getComponent().setEnabled(false);
-						String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
+						String mrl = model.getEmbeddedPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
 						String mediaOptions = "--network-cache=5000 --volume=0";
 						if (mrl != null) {
 							view.getPlayerView().playMedia(mrl, mediaOptions);
@@ -96,7 +154,7 @@ public class MainController implements PropertyChangeListener{
 						if (!streamer.getStream().equals("twitch.tv/"+channel.getName())) {
 							LivestreamerFactory.removeInstance(streamer);
 							e.getComponent().setEnabled(false);
-							String mrl = model.getPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
+							String mrl = model.getEmbeddedPlayerModel().startInstance("twitch.tv/"+channel.getName(),LivestreamerFactory.getDefaultQuality());
 							String mediaOptions = "--network-cache=5000";
 							if (mrl != null) {
 								view.getPlayerView().playMedia(mrl, mediaOptions);
@@ -121,7 +179,7 @@ public class MainController implements PropertyChangeListener{
 		@Override
 		public void mouseEntered(MouseEvent e) {
 			if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-				ChannelModel channel = model.getChannel(e.getComponent().getName());
+				ChannelModel channel = model.getChannelListModel().getChannel(e.getComponent().getName());
 				if (channel.isOnline()) {
 					e.getComponent().setBackground(colorLive.brighter());
 					e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
@@ -133,7 +191,7 @@ public class MainController implements PropertyChangeListener{
 		@Override
 		public void mouseExited(MouseEvent e) {
 			if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-				ChannelModel channel = model.getChannel(e.getComponent().getName());
+				ChannelModel channel = model.getChannelListModel().getChannel(e.getComponent().getName());
 				if (channel.isOnline()) e.getComponent().setBackground(colorLive);
 				else e.getComponent().setBackground(colorOff);
 				e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
