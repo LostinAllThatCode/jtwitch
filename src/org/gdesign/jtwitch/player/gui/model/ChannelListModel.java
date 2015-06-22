@@ -12,10 +12,12 @@ public class ChannelListModel {
 	
 	private SwingPropertyChangeSupport propertyChange;
 	private List<ChannelModel> channels;
+	private String username;
 	
 	public ChannelListModel(final String username) {
-		channels = Collections.synchronizedList(new ArrayList<ChannelModel>());
-		propertyChange = new SwingPropertyChangeSupport(this);
+		this.channels 		= Collections.synchronizedList(new ArrayList<ChannelModel>());
+		this.propertyChange = new SwingPropertyChangeSupport(this);
+		this.setUsername(username);
 	}
 	
 	public void addModelListener(PropertyChangeListener prop) {
@@ -50,6 +52,14 @@ public class ChannelListModel {
 	
 	public Collection<ChannelModel> getChannels(){
 		return channels;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 	
 }

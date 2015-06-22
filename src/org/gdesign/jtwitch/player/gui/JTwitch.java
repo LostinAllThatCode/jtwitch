@@ -1,6 +1,5 @@
 package org.gdesign.jtwitch.player.gui;
 
-import java.awt.BorderLayout;
 import java.util.Observable;
 import java.util.Properties;
 
@@ -28,8 +27,6 @@ public class JTwitch extends Observable{
 		
 		LogManager.getLogger().debug(SystemInfo.getOS());
 		
-		final Properties config = new Configuration("jtwitch.properties");
-		
         if (checkVLCj()) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -47,7 +44,11 @@ public class JTwitch extends Observable{
         }
 	}
 	
+	Properties config = new Configuration("jtwitch.properties");
+	
 	public JTwitch() throws ParseException {
+		
+		
 		JFrame frame = new JFrame("JTwitch Player (0.1.alpha)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(0, 0, 1280, 640);
@@ -55,12 +56,12 @@ public class JTwitch extends Observable{
 		frame.setVisible(true);
 		
 		MainView mainView 	= new MainView(frame);
-		MainModel mainModel	= new MainModel("its1z0");
+		MainModel mainModel	= new MainModel(config.getProperty("username"));
 		MainController controller = new MainController(mainView, mainModel);
 		
 		frame.add(mainView);
 		
-		controller.updateGUI(5000);
+		controller.update(30000);
 
 	}
 	

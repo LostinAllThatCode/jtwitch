@@ -3,7 +3,6 @@ package org.gdesign.jtwitch.player.gui.view;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-
 import java.util.Collection;
 
 import javax.swing.BorderFactory;
@@ -15,19 +14,15 @@ import org.gdesign.jtwitch.player.gui.model.ChannelModel;
 
 public class ChannelListView extends JScrollPane{
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = -4246339204285816080L;
 	
 	private JPanel channelList;
 
 	public ChannelListView() {
-		
 		channelList = new JPanel();
 		channelList.setLayout(new BoxLayout(channelList, BoxLayout.Y_AXIS));
-		channelList.setBackground(Color.DARK_GRAY);
-		
+		channelList.setBackground(Color.DARK_GRAY.darker());
+				
         setViewportView(channelList);
         setBorder(BorderFactory.createEmptyBorder());
         
@@ -39,11 +34,6 @@ public class ChannelListView extends JScrollPane{
 		setMinimumSize(new Dimension(250,Integer.MAX_VALUE));
 		setPreferredSize(new Dimension(250,Integer.MAX_VALUE));
 		setMaximumSize(new Dimension(250,Integer.MAX_VALUE));
-	}
-	
-	
-	public ChannelView createChannel(){
-		return new ChannelView();
 	}
 	
 	public void removeChannel(String channelName){
@@ -72,6 +62,13 @@ public class ChannelListView extends JScrollPane{
 			}
 		}
 		channelList.validate();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		for (Component c : channelList.getComponents()) {
+			c.setEnabled(enabled);
+		}
 	}
 	
 }

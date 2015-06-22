@@ -4,38 +4,32 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 import java.beans.PropertyChangeListener;
 
-import org.gdesign.jtwitch.player.livestreamer.Livestreamer;
-import org.gdesign.jtwitch.player.livestreamer.LivestreamerFactory;
-import org.gdesign.jtwitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
-
+import org.gdesign.jtwitch.player.livestreamer.LivestreamerInstance;
 
 public class EmbeddedPlayerModel {
 
 	private SwingPropertyChangeSupport propertyChange;
-	private Livestreamer instance;	
+	private LivestreamerInstance instance;	
 
 	public EmbeddedPlayerModel() {
 		propertyChange = new SwingPropertyChangeSupport(this);
 	}
 	
-	public String startInstance(String... args){
-		try {			
-			instance = LivestreamerFactory.startInstance(args);
-			if (instance != null) {
-				propertyChange.firePropertyChange("streamStarted", "null", instance.getStream().replace("twitch.tv/", ""));
-				return instance.getMRL();
-			}
-		} catch (LivestreamerAlreadyRunningException e) {
-			e.printStackTrace();
-		} 
-		return null;
+	public void set(LivestreamerInstance instance){
+		LivestreamerInstance oldInstance = this.instance;
+		this.instance = instance;
+		propertyChange.firePropertyChange("streamStarted",oldInstance,instance);
 	}
 	
-	public Livestreamer getInstance(){
+	public LivestreamerInstance getInstance(){
 		return instance;
-	}	
+	}
 	
 	public void addModelListener(PropertyChangeListener prop) {
 		propertyChange.addPropertyChangeListener(prop);
     }
+	
+	public boolean isPlaying() {
+		return instance.isConnected();
+	}
 }

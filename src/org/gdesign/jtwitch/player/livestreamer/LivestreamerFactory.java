@@ -16,7 +16,7 @@ public class LivestreamerFactory {
 	
 	private static String quality;
 	
-	private static HashMap<String, Livestreamer> instances;
+	private static HashMap<String, LivestreamerInstance> instances;
 	
 	/** 
 	 * 	Its possible to run multiple livestreamer instances at once.
@@ -29,8 +29,9 @@ public class LivestreamerFactory {
 		instances 		= new HashMap<>();
 	}
 	
-	public static Livestreamer startInstance(String... args) throws LivestreamerAlreadyRunningException{
+	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException{
 		final String stream = args[0];
+		final String quality = args[1];
 		final int randomPort = generateRandomPort(
 				Integer.valueOf(config.getProperty("livestreamer-http-port")), 
 				Integer.valueOf(config.getProperty("livestreamer-http-port-range")));
@@ -41,17 +42,13 @@ public class LivestreamerFactory {
 			throw new LivestreamerAlreadyRunningException();
 		}
 			
-		Livestreamer instance = new Livestreamer(cmd);
+		LivestreamerInstance instance = new LivestreamerInstance(cmd);
 		instances.put(stream, instance);
 		
 		instance.setStream(stream);
 		instance.setPort(randomPort);
+		instance.setQuality(quality);
 		instance.start();
-		try {
-			Thread.sleep(Integer.valueOf(config.getProperty("livestreamer-http-wait")));
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
 		return instance;
 	}
 	
@@ -65,16 +62,18 @@ public class LivestreamerFactory {
 		return path + args;
 	}
 	
-	public static Livestreamer getInstance(String name) {
+	public static LivestreamerInstance getInstance(String name) {
 		return instances.get(name);
 	}
 	
-	public static void removeInstance(Livestreamer instance){
-		instance.stopStream();
-		instances.remove(instance.getStream());
+	public static void removeInstance(LivestreamerInstance instance){
+		if (instance != null) {
+			instance.stopStream();
+			instances.remove(instance.getStream());
+		}
 	}
 	
-	private static boolean isRunning(String stream){
+	protected static boolean isRunning(String stream){
 		return instances.containsKey(stream); 
 	}
 	

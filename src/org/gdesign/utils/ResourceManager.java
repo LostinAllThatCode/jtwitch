@@ -8,7 +8,7 @@ import java.util.HashMap;
 
 import javax.swing.JLabel;
 
-public class FontResource {
+public class ResourceManager {
 	
 	private static HashMap<String, Font> fonts;
 	
