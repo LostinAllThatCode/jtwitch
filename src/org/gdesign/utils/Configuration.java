@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-import org.gdesign.utils.SystemInfo.OperatingSystem;
-
 public class Configuration extends Properties{
 	
 	/**
@@ -25,17 +23,6 @@ public class Configuration extends Properties{
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-	
-	@Override
-	public String getProperty(String key) {
-		String value = super.getProperty(key);
-		if (SystemInfo.getOS().equals(OperatingSystem.UNIX)) value = parseWindowsPath(value);
-		return value;
-	}
-	
-	private static String parseWindowsPath(String path){
-		return path.replace("\\", "/\\"); 
 	}
 	
 	public static void checkConfig(Properties c1, Properties c2){				

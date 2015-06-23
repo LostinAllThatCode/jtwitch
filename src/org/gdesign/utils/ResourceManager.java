@@ -39,7 +39,9 @@ public class ResourceManager {
          }
 	}
 	
-	public static void fixFontSize(JLabel label){
+	public static void fixFontSize(JLabel label, String text){
+		label.setText(text);
+		
 		Font labelFont = label.getFont();
 		String labelText = label.getText();
 

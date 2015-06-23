@@ -5,7 +5,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import org.gdesign.jtwitch.player.gui.JTwitch;
+import org.gdesign.twitch.player.gui.JTwitch;
 
 public class JarExport {
 
