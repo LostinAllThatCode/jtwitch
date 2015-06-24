@@ -37,6 +37,7 @@ public class ChannelListModel {
 	
 	public void removeChannel(ChannelModel m){
 		channels.remove(m);
+		propertyChange.firePropertyChange("removeChannel", null, m);
 	}
 	
 	public ChannelModel getChannel(String name){
@@ -50,7 +51,7 @@ public class ChannelListModel {
 		return channels.size();
 	}
 	
-	public Collection<ChannelModel> getChannels(){
+	public List<ChannelModel> getChannels(){
 		return channels;
 	}
 

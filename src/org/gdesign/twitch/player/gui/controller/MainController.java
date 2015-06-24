@@ -2,6 +2,8 @@ package org.gdesign.twitch.player.gui.controller;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.json.type.TChannel;
@@ -42,6 +44,8 @@ public class MainController implements PropertyChangeListener{
 
 	public void update(final long interval) throws ParseException{
 		new Thread(new Runnable() {			
+			long time = 0;
+			
 			@Override
 			public void run() {
 				while (true) {
@@ -70,8 +74,35 @@ public class MainController implements PropertyChangeListener{
 								if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
 								m.fireUpdate();
 							}
+							if (time / interval >= 4) {
+								List<ChannelModel> copy = new ArrayList<>(model.getChannelListModel().getChannels());
+								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels()){
+									String channelName = channel.getString("display_name");
+									ChannelModel channelModel = model.getChannelListModel().getChannel(channelName);
+									if (channelModel == null){
+										if (channelName.length() != 0){
+											ChannelModel m = new ChannelModel(channelName);
+											m.addModelListener(MainController.this);
+											model.getChannelListModel().addChannel(m);
+															
+											TStream stream = twitch.getStream(m.getName());
+											if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
+											if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
+											if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+											m.fireUpdate();
+											view.getChannelListView().setEnabled(true);
+										}
+									} else {
+										copy.remove(channelModel);
+									}
+								}
+								for (ChannelModel rem : copy) model.getChannelListModel().removeChannel(rem);
+								LogManager.getLogger().debug(copy);
+								time = 0;
+							}
 						}
 						Thread.sleep(interval);
+						time+=interval;
 					} catch (ParseException | InterruptedException e) {
 						LogManager.getLogger().error(e.getMessage());
 					}
@@ -96,6 +127,13 @@ public class MainController implements PropertyChangeListener{
 					cv.setOnline(cm.isOnline());
 					cv.addMouseListener(listener);
 					view.getChannelListView().addChannel(cv);
+					view.getChannelListView().sortChannels(model.getChannelListModel().getSortedChannels());
+				}
+			} else if (evt.getPropertyName().compareTo("removeChannel") == 0){
+				ChannelModel cm = (ChannelModel) evt.getNewValue();
+				ChannelView cv = new ChannelView();
+				if (cm != null && cv != null) {
+					view.getChannelListView().remove(cv);
 					view.getChannelListView().sortChannels(model.getChannelListModel().getSortedChannels());
 				}
 			}

@@ -1,6 +1,5 @@
 package org.gdesign.twitch.player.gui;
 
-import java.util.Observable;
 import java.util.Properties;
 
 import javax.swing.*;
@@ -15,7 +14,7 @@ import org.json.simple.parser.ParseException;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
-public class JTwitch extends Observable{
+public class JTwitch{
 
 	/**
 	 * @param args
@@ -58,7 +57,7 @@ public class JTwitch extends Observable{
 		MainModel mainModel	= new MainModel(config.getProperty("username"));
 		MainController controller = new MainController(mainView, mainModel);
 	
-		controller.update(5000);
+		controller.update(30000);
 	}
 	
 	
