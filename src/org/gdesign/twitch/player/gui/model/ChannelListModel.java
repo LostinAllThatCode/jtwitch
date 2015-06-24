@@ -10,6 +10,7 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 public class ChannelListModel {
 	
+	private PropertyChangeListener listener;
 	private SwingPropertyChangeSupport propertyChange;
 	private List<ChannelModel> channels;
 	private String username;
@@ -21,8 +22,15 @@ public class ChannelListModel {
 	}
 	
 	public void addModelListener(PropertyChangeListener prop) {
-		propertyChange.addPropertyChangeListener(prop);
+		propertyChange.addPropertyChangeListener(listener = prop);
     }
+	
+	public ChannelModel createChannel(String channelName){
+		ChannelModel m = new ChannelModel(channelName);
+		m.addModelListener(listener);
+		addChannel(m);
+		return m;
+	}
 	
 	public Collection<ChannelModel> getSortedChannels(){
 		Collections.sort(channels);

@@ -41,6 +41,14 @@ public class MainController implements PropertyChangeListener{
 		this.model.addModelListener(this);
 		this.view.getChannelListView().setEnabled(false);
 	}
+	
+	private void updateChannel(ChannelModel m) throws ParseException {
+		TStream stream = twitch.getStream(m.getName());
+		if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
+		if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
+		if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+		m.fireUpdate();
+	}
 
 	public void update(final long interval) throws ParseException{
 		new Thread(new Runnable() {			
@@ -52,52 +60,27 @@ public class MainController implements PropertyChangeListener{
 					try {
 						if (model.getChannelListModel().getChannelCount() == 0) {
 								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels()){
-									String channelName = channel.getString("display_name");
-									if (channelName.length() != 0){
-										ChannelModel m = new ChannelModel(channelName);
-										m.addModelListener(MainController.this);
-										model.getChannelListModel().addChannel(m);
-														
-										TStream stream = twitch.getStream(m.getName());
-										if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
-										if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
-										if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
-										m.fireUpdate();
-									}
+									ChannelModel m = model.getChannelListModel().createChannel(channel.getString("display_name"));
+									updateChannel(m);
 								}
 								view.getChannelListView().setEnabled(true);
 						} else {
-							for (ChannelModel m : model.getChannelListModel().getChannels()){
-								TStream stream = twitch.getStream(m.getName());
-								if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
-								if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
-								if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
-								m.fireUpdate();
-							}
+							for (ChannelModel m : model.getChannelListModel().getChannels()) if (m.isOnline()) updateChannel(m);
 							if (time / interval >= 4) {
 								List<ChannelModel> copy = new ArrayList<>(model.getChannelListModel().getChannels());
 								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels()){
 									String channelName = channel.getString("display_name");
 									ChannelModel channelModel = model.getChannelListModel().getChannel(channelName);
 									if (channelModel == null){
-										if (channelName.length() != 0){
-											ChannelModel m = new ChannelModel(channelName);
-											m.addModelListener(MainController.this);
-											model.getChannelListModel().addChannel(m);
-															
-											TStream stream = twitch.getStream(m.getName());
-											if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
-											if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
-											if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
-											m.fireUpdate();
-											view.getChannelListView().setEnabled(true);
-										}
+										ChannelModel m = model.getChannelListModel().createChannel(channelName);
+										updateChannel(m);					
+										view.getChannelListView().setEnabled(true);
 									} else {
+										updateChannel(channelModel);
 										copy.remove(channelModel);
 									}
 								}
 								for (ChannelModel rem : copy) model.getChannelListModel().removeChannel(rem);
-								LogManager.getLogger().debug(copy);
 								time = 0;
 							}
 						}

@@ -57,7 +57,7 @@ public class JTwitch{
 		MainModel mainModel	= new MainModel(config.getProperty("username"));
 		MainController controller = new MainController(mainView, mainModel);
 	
-		controller.update(30000);
+		controller.update(15000);
 	}
 	
 	

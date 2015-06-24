@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.json.type.TChannel;
 import org.gdesign.twitch.api.json.type.TFollows;
 import org.gdesign.twitch.api.json.type.TStream;
@@ -55,30 +56,33 @@ public class HttpRequest {
 	}
 	
 	private Object get(String keyword, JSONRequest request) throws ParseException {
+		String req = null;
 		switch (request) {
 			case CHANNEL:
-				return jsonParserInstance.parse(request("https://api.twitch.tv/kraken/channels/"+keyword.toLowerCase()),containerFactory);
-			case FOLLOWS:
-				return jsonParserInstance.parse(request("https://api.twitch.tv/kraken/users/"+keyword.toLowerCase()+"/follows/channels"),containerFactory);
-			case STREAM:
-				return jsonParserInstance.parse(request("https://api.twitch.tv/kraken/streams/"+keyword.toLowerCase()),containerFactory);
-			default:
+				req = request("https://api.twitch.tv/kraken/channels/"+keyword.toLowerCase());
 				break;
-			}
-		return null;
+			case FOLLOWS:
+				req = request("https://api.twitch.tv/kraken/users/"+keyword.toLowerCase()+"/follows/channels");
+				break;
+			case STREAM:
+				req = request("https://api.twitch.tv/kraken/streams/"+keyword.toLowerCase());
+				break;
+			default:
+				return null;
+		}
+		LogManager.getLogger().debug(keyword);
+		if (req != null) return jsonParserInstance.parse(req,containerFactory); else return null;
 	}
 	
 	public String request(String request_url) throws ParseException{
 		try {
-			URL url = new URL( request_url );
-			
+			URL url = new URL(request_url.replaceAll(" ", ""));
 			URLConnection con = url.openConnection();
 			con.connect();
-			
-			BufferedReader br = new BufferedReader(new InputStreamReader(con.getInputStream()));
-			return jsonParserInstance.parse(br).toString();
+			InputStreamReader in = new InputStreamReader(con.getInputStream());
+			if (in != null)	return jsonParserInstance.parse(new BufferedReader(in)).toString();
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogManager.getLogger().error(e);
 		}
 		return null;
 	}
