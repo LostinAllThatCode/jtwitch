@@ -8,7 +8,7 @@ public class ChannelModel implements Comparable<ChannelModel>{
 	
 	private SwingPropertyChangeSupport propertyChange;
 	private boolean online,hasChanged;
-	private String name,game,action;
+	private String displayName,name,game,action;
 	private int viewers;
 	
 	public ChannelModel(String channelName) {
@@ -28,6 +28,10 @@ public class ChannelModel implements Comparable<ChannelModel>{
 		return this.name;
 	}
 	
+	public String getDisplayname() {
+		return displayName;
+	}
+	
 	public String getGame(){
 		return this.game;
 	}
@@ -42,6 +46,11 @@ public class ChannelModel implements Comparable<ChannelModel>{
 	
 	public void setOnline(boolean online){
 		this.online = online;
+		hasChanged = true;
+	}
+	
+	public void setDisplayname(String displayName) {
+		this.displayName = displayName;
 		hasChanged = true;
 	}
 	

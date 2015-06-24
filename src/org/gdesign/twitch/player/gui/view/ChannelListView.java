@@ -22,7 +22,7 @@ public class ChannelListView extends JScrollPane{
 		channelList = new JPanel();
 		channelList.setLayout(new BoxLayout(channelList, BoxLayout.Y_AXIS));
 		channelList.setBackground(Color.DARK_GRAY.darker());
-				
+		
         setViewportView(channelList);
         setBorder(BorderFactory.createEmptyBorder());
         
@@ -56,9 +56,9 @@ public class ChannelListView extends JScrollPane{
 	public synchronized void sortChannels(Collection<ChannelModel> channels){
 		Component[] comps = channelList.getComponents();
 		channelList.removeAll();
-		for (ChannelModel m : channels){
-			for (Component c : comps){
-				if (c.getName().compareTo(m.getName()) == 0) channelList.add(c);
+		for (ChannelModel m : channels) {
+			for (Component c : comps) {
+				if (c.getClass().equals(ChannelView.class) && c.getName().compareTo(m.getName()) == 0) channelList.add(c);
 			}
 		}
 		channelList.validate();

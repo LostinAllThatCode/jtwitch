@@ -10,12 +10,12 @@ public class TStream extends TNode{
 	
 	@Override
 	protected void decode() {
-		JSONObject data = (JSONObject) self.get("stream");
-		if (data != null){
+		if (self.get("stream") != null) {
+			JSONObject data = (JSONObject) self.get("stream");
 			for (Object key : data.keySet()){
 				setValue(key.toString(), data);
 			}
-		} 
+		}
 	}
 	
 	public boolean isOnline(){

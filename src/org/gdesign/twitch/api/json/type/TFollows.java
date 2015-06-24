@@ -31,7 +31,7 @@ public class TFollows extends TNode{
 		JSONArray follows = (JSONArray) self.get("follows");
 		for (int i=0; i<follows.size();i++){
 			TChannel c = new TChannel((JSONObject) follows.get(i));
-			values.put(c.values.get("display_name").toString().toLowerCase(), c);	
+			values.put(c.values.get("name").toString().toLowerCase(), c);	
 		}
 	}
 

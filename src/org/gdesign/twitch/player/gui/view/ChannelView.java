@@ -35,7 +35,8 @@ public class ChannelView extends JPanel {
 	private JLabel viewers 			= new JLabel("");
 	private JLabel action 			= new JLabel("");
 	
-	public ChannelView() {
+	public ChannelView(String viewname) {
+		setName(viewname);
 		setEnabled(false);
 		setLayout(new GridBagLayout());
 
@@ -94,7 +95,6 @@ public class ChannelView extends JPanel {
 	
 	public void setChannelName(String name){
 		ResourceManager.fixFontSize(this.name,name.toUpperCase());
-		this.setName(name);
 	}
 	
 	public void setChannelGame(String game){

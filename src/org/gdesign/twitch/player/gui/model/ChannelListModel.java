@@ -21,26 +21,26 @@ public class ChannelListModel {
 		this.setUsername(username);
 	}
 	
-	public void addModelListener(PropertyChangeListener prop) {
-		propertyChange.addPropertyChangeListener(listener = prop);
-    }
-	
-	public ChannelModel createChannel(String channelName){
+	public ChannelModel createChannel(String channelName, String displayName){
 		ChannelModel m = new ChannelModel(channelName);
+		m.setDisplayname(displayName);
 		m.addModelListener(listener);
 		addChannel(m);
 		return m;
 	}
+	
+	public void addModelListener(PropertyChangeListener prop) {
+		propertyChange.addPropertyChangeListener(listener = prop);
+    }
 	
 	public Collection<ChannelModel> getSortedChannels(){
 		Collections.sort(channels);
 		return channels;
 	}
 	
-	public ChannelModel addChannel(ChannelModel m){
+	private void addChannel(ChannelModel m){
 		channels.add(m);
 		propertyChange.firePropertyChange("addChannel", null, m);
-		return m;
 	}
 	
 	public void removeChannel(ChannelModel m){
@@ -58,10 +58,6 @@ public class ChannelListModel {
 	public int getChannelCount(){
 		return channels.size();
 	}
-	
-	public List<ChannelModel> getChannels(){
-		return channels;
-	}
 
 	public String getUsername() {
 		return username;
@@ -70,5 +66,5 @@ public class ChannelListModel {
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+
 }

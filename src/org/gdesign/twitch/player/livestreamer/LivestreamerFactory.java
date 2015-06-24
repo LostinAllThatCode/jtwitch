@@ -2,7 +2,6 @@ package org.gdesign.twitch.player.livestreamer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Properties;
 import java.util.Random;
 
@@ -20,12 +19,11 @@ public class LivestreamerFactory {
 	
 	private static Random 		random;
 	private static Properties 	config;
-	private static HashMap<String, LivestreamerInstance> instances;
+	private static LivestreamerInstance instance;
 		
 	static {
 		random 			= new Random();
-		config 			= new Configuration("livestreamer.properties");		
-		instances 		= new HashMap<>();
+		config 			= new Configuration("livestreamer.properties");
 	}
 	
 	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException, LivestreamerMaxInstancesException{
@@ -37,18 +35,14 @@ public class LivestreamerFactory {
 		
 		final String[] cmd = (String[]) ArrayUtils.addAll(runtimeExecutable(randomPort), args);
 		
-		if (instances.size() >= Integer.valueOf(config.getProperty("livestreamer-http-max-instances"))+1) {
-			throw new LivestreamerMaxInstancesException();
-		}
-		
 		if (isRunning(stream)) {
-			LogManager.getLogger().error("There is an existing instance for "+stream+" with threadID: "+instances.get(stream).getId());
+			LogManager.getLogger().error("There is an existing instance for "+stream+" with threadID: "+instance.getId());
 			throw new LivestreamerAlreadyRunningException();
+		} else {
+			if (instance != null) instance.stopStream();
 		}
 			
-		LivestreamerInstance instance = new LivestreamerInstance(cmd);
-		instances.put(stream, instance);
-		
+		instance = new LivestreamerInstance(cmd);
 		instance.setStream(stream);
 		instance.setPort(randomPort);
 		instance.setQuality(quality);
@@ -66,20 +60,11 @@ public class LivestreamerFactory {
 		return (String[]) ArrayUtils.addAll(path,args);
 	}
 	
-	private static LivestreamerInstance getInstance(String name) {
-		return instances.get(name);
-	}
-	
-	public static void removeInstance(String instanceName){
-		LivestreamerInstance instance = getInstance(instanceName);
-		if (instance != null) {
-			instance.stopStream();
-			instances.remove(instanceName);
-		}
-	}
-	
 	protected static boolean isRunning(String stream){
-		return instances.containsKey(stream); 
+		if (instance == null) return false;
+		else {
+			return (instance.getStream().compareTo(stream) == 0 && instance.isAlive());
+		}
 	}
 	
 	public static String getDefaultQuality(){

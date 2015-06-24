@@ -17,7 +17,6 @@ import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.ChannelView;
 import org.gdesign.twitch.player.gui.view.EmbeddedPlayerView;
 import org.gdesign.twitch.player.gui.view.MainView;
-import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
 import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.json.simple.parser.ParseException;
 
@@ -42,12 +41,15 @@ public class MainController implements PropertyChangeListener{
 		this.view.getChannelListView().setEnabled(false);
 	}
 	
-	private void updateChannel(ChannelModel m) throws ParseException {
-		TStream stream = twitch.getStream(m.getName());
-		if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
-		if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
-		if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
-		m.fireUpdate();
+	private void updateChannelModel(ChannelModel m) throws ParseException {
+		if (m != null){
+			TStream stream = twitch.getStream(m.getName());
+			if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
+			if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
+			if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+			m.fireUpdate();
+			view.getChannelListView().getChannel(m.getName()).setEnabled(true);
+		}
 	}
 
 	public void update(final long interval) throws ParseException{
@@ -59,24 +61,19 @@ public class MainController implements PropertyChangeListener{
 				while (true) {
 					try {
 						if (model.getChannelListModel().getChannelCount() == 0) {
-								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels()){
-									ChannelModel m = model.getChannelListModel().createChannel(channel.getString("display_name"));
-									updateChannel(m);
-								}
-								view.getChannelListView().setEnabled(true);
+								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels())
+									updateChannelModel(model.getChannelListModel().createChannel(channel.getString("name"),channel.getString("display_name")));
 						} else {
-							for (ChannelModel m : model.getChannelListModel().getChannels()) if (m.isOnline()) updateChannel(m);
+							for (ChannelModel m : model.getChannelListModel().getSortedChannels()) if (m.isOnline()) updateChannelModel(m);
 							if (time / interval >= 4) {
-								List<ChannelModel> copy = new ArrayList<>(model.getChannelListModel().getChannels());
+								List<ChannelModel> copy = new ArrayList<>(model.getChannelListModel().getSortedChannels());
 								for (TChannel channel : twitch.getFollows(model.getChannelListModel().getUsername()).getChannels()){
-									String channelName = channel.getString("display_name");
-									ChannelModel channelModel = model.getChannelListModel().getChannel(channelName);
+									ChannelModel channelModel = model.getChannelListModel().getChannel(channel.getString("name"));
 									if (channelModel == null){
-										ChannelModel m = model.getChannelListModel().createChannel(channelName);
-										updateChannel(m);					
+										updateChannelModel(model.getChannelListModel().createChannel(channel.getString("name"),channel.getString("display_name")));					
 										view.getChannelListView().setEnabled(true);
 									} else {
-										updateChannel(channelModel);
+										updateChannelModel(channelModel);
 										copy.remove(channelModel);
 									}
 								}
@@ -101,9 +98,9 @@ public class MainController implements PropertyChangeListener{
 		if (evt.getSource().getClass().equals(ChannelListModel.class)){
 			if (evt.getPropertyName().compareTo("addChannel") == 0){
 				ChannelModel cm = (ChannelModel) evt.getNewValue();
-				ChannelView cv = new ChannelView();
-				if (cm != null && cv != null) {
-					cv.setChannelName(cm.getName());
+				if (cm != null) {
+					ChannelView cv = new ChannelView(cm.getName());
+					cv.setChannelName(cm.getDisplayname());
 					cv.setChannelGame(cm.getGame());
 					cv.setChannelViewers(String.valueOf(cm.getViewers()));
 					cv.setChannelAction(cm.getAction());
@@ -114,7 +111,7 @@ public class MainController implements PropertyChangeListener{
 				}
 			} else if (evt.getPropertyName().compareTo("removeChannel") == 0){
 				ChannelModel cm = (ChannelModel) evt.getNewValue();
-				ChannelView cv = new ChannelView();
+				ChannelView cv = view.getChannelListView().getChannel(cm.getName());
 				if (cm != null && cv != null) {
 					view.getChannelListView().remove(cv);
 					view.getChannelListView().sortChannels(model.getChannelListModel().getSortedChannels());
@@ -142,15 +139,13 @@ public class MainController implements PropertyChangeListener{
 						LivestreamerInstance instance = (LivestreamerInstance) evt.getNewValue();
 						pv.playMedia(instance.getMRL(), "");
 						pv.setDescription(instance.getStream());
-						pv.setQuality(instance.getQuality());
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).setAction("PLAYING");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).fireUpdate();
 					} else if (evt.getPropertyName().equals("streamEnded")){
 						LivestreamerInstance instance = (LivestreamerInstance) evt.getNewValue();
-						pv.stopMedia();
-						pv.setDescription("");
-						pv.setQuality("");						
-						LivestreamerFactory.removeInstance(instance.getStream());
+						//pv.stopMedia();
+						//pv.setDescription("");				
+						instance.stopStream();
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).setAction("");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).fireUpdate();
 					}

@@ -4,7 +4,6 @@ import javax.swing.event.SwingPropertyChangeSupport;
 
 import java.beans.PropertyChangeListener;
 
-import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
 import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.twitch.player.livestreamer.LivestreamerListener;
 
@@ -20,16 +19,18 @@ public class EmbeddedPlayerModel implements LivestreamerListener{
 	public void addModelListener(PropertyChangeListener prop) {
 		propertyChange.addPropertyChangeListener(prop);
     }
+	
+	public LivestreamerInstance getInstance(){
+		return instance;
+	}
 
 	@Override
 	public void streamStarted(LivestreamerInstance livestreamer) {
-		if (instance != null) propertyChange.firePropertyChange("streamEnded",null,instance);
 		propertyChange.firePropertyChange("streamStarted",null,instance = livestreamer);
 	}
 
 	@Override
 	public void streamEnded(LivestreamerInstance livestreamer) {
-		LivestreamerFactory.removeInstance(livestreamer.getStream());
 		propertyChange.firePropertyChange("streamEnded",null,livestreamer);
 	}
 }

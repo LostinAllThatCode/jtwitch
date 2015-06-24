@@ -8,6 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.ChannelModel;
 import org.gdesign.twitch.player.gui.view.ChannelView;
+import org.gdesign.twitch.player.gui.view.EmbeddedPlayerControlView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
 import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.twitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
@@ -40,6 +41,15 @@ public class ChannelMouseListener extends MouseAdapter {
 					if (controller.getView().getEmbeddedPlayerView().isFullscreen()) controller.getView().getChannelListView().setVisible(false);
 					else controller.getView().getChannelListView().setVisible(true);
 				}
+			} else if (e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+				switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
+					case PLAY_STOP:
+						if (controller.getView().getEmbeddedPlayerView().isPlaying()) controller.getModel().getEmbeddedPlayerModel().getInstance().stopStream();
+						break;
+					default:
+						break;
+				}
+				
 			}
 		}
 	}
@@ -49,8 +59,10 @@ public class ChannelMouseListener extends MouseAdapter {
 		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
 			ChannelModel channel = controller.getModel().getChannelListModel().getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
-				controller.getView().getChannelListView().getChannel(channel.getName()).setHover(true);
+				((ChannelView) e.getComponent()).setHover(true);
 			}
+		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+			((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
 		}
 	}
 	@Override
@@ -58,9 +70,11 @@ public class ChannelMouseListener extends MouseAdapter {
 		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
 			ChannelModel channel = controller.getModel().getChannelListModel().getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
-				controller.getView().getChannelListView().getChannel(channel.getName()).setHover(false);
-			}			
-		}
+				((ChannelView) e.getComponent()).setHover(false);
+			}		
+		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+			((EmbeddedPlayerControlView) e.getComponent()).setHover(false);
+		}	
 	}
 	
 	

@@ -70,7 +70,6 @@ public class HttpRequest {
 			default:
 				return null;
 		}
-		LogManager.getLogger().debug(keyword);
 		if (req != null) return jsonParserInstance.parse(req,containerFactory); else return null;
 	}
 	
