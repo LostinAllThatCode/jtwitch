@@ -49,7 +49,7 @@ public class LivestreamerInstance extends Thread implements Runnable{
 	        	line += (char) ch;
 	        	if (line.startsWith("[cli]") && line.endsWith("\n")){
 	        		String output = line.substring(5, line.length()-2);
-	        		LogManager.getLogger().debug(output);	
+	        		LogManager.getLogger().trace(output);	
 	        		if (output.contains(this.localhost+":"+port)) for (LivestreamerListener l : listener) l.streamStarted(this);
 	        		if (output.contains("HTTP connection closed") || output.contains("Stream ended")) {
 	        			break;

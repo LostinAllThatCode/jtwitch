@@ -168,7 +168,6 @@ public class MainController implements PropertyChangeListener{
 						pv.setDescription("");
 						pv.setQuality("");						
 						LivestreamerFactory.removeInstance(instance.getStream());
-						LogManager.getLogger().debug(instance.getStream());
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).setAction("");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).fireUpdate();
 					}
