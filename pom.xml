@@ -26,7 +26,7 @@
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>
-            			<mainClass>org.gdesign.jtwitch.player.gui.JTwitch</mainClass>
+            			<mainClass>org.gdesign.twitch.player.gui.JTwitch</mainClass>
           			</manifest>
         		</archive>
       		</configuration>
