@@ -10,8 +10,8 @@ public class MainModel {
 	private ChannelListModel channelListModel;
 	private EmbeddedPlayerModel embeddedPlayerModel;
 	
-	public MainModel(String username) {
-		channelListModel = new ChannelListModel(username);
+	public MainModel() {
+		channelListModel = new ChannelListModel();
 		embeddedPlayerModel = new EmbeddedPlayerModel();
 		propertyChange = new SwingPropertyChangeSupport(this);
 	}

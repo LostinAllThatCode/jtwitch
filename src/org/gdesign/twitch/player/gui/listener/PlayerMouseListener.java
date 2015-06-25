@@ -12,14 +12,18 @@ import org.gdesign.twitch.player.gui.view.EmbeddedPlayerControlView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
 import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.twitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
-import org.gdesign.twitch.player.livestreamer.exception.LivestreamerMaxInstancesException;
 
-public class ChannelMouseListener extends MouseAdapter {
+public class PlayerMouseListener extends MouseAdapter {
 	
 	private MainController controller;
 	
-	public ChannelMouseListener(MainController controller) {
+	public PlayerMouseListener(MainController controller) {
 		this.controller = controller;
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		LogManager.getLogger().debug(e.getXOnScreen());
 	}
 	
 	@Override
@@ -31,20 +35,23 @@ public class ChannelMouseListener extends MouseAdapter {
 					try {
 						LivestreamerInstance i = LivestreamerFactory.startInstance("twitch.tv/"+channel.getName(), LivestreamerFactory.getDefaultQuality());
 						i.addListener(controller.getModel().getEmbeddedPlayerModel());
-					} catch (LivestreamerAlreadyRunningException | LivestreamerMaxInstancesException  e1) {
+						controller.getView().getEmbeddedPlayerView().setControlValue("STATUS", "Starting livestreamer instance for "+i.getStream());
+					} catch (LivestreamerAlreadyRunningException  e1) {
 						LogManager.getLogger().error(e1);
 					} 
-				}
-			} else if (e.getComponent().getName().compareTo("controlFullscreen") == 0){
-				if (e.getClickCount() == 2) {
-					controller.getView().getEmbeddedPlayerView().toggleFullscreen();
-					if (controller.getView().getEmbeddedPlayerView().isFullscreen()) controller.getView().getChannelListView().setVisible(false);
-					else controller.getView().getChannelListView().setVisible(true);
 				}
 			} else if (e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
 				switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
 					case PLAY_STOP:
 						if (controller.getView().getEmbeddedPlayerView().isPlaying()) controller.getModel().getEmbeddedPlayerModel().getInstance().stopStream();
+						break;
+					case FULLSCREEN:
+						controller.getView().getEmbeddedPlayerView().toggleFullscreen();
+						if (controller.getView().getEmbeddedPlayerView().isFullscreen()) controller.getView().getChannelListView().setVisible(false);
+						else controller.getView().getChannelListView().setVisible(true);
+						break;
+					case VOLUME:
+						controller.getView().getEmbeddedPlayerView().setVolume(e.getX());
 						break;
 					default:
 						break;

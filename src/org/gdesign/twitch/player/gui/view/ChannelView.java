@@ -151,17 +151,13 @@ public class ChannelView extends JPanel {
 		g.drawLine(0,this.getHeight()-1,this.getWidth(),this.getHeight()-1);
 		
 		if (action.getText().compareTo("PLAYING")==0){
-			int size = 8;
 			if (getBackground().equals((Color.WHITE))) {
 				g.setColor(bgColor);
 			} else {
 				g.setColor(new Color(255,255,255,100));
 			}
-			int[] x = { this.getWidth()-18, this.getWidth()-18, this.getWidth()-18+size };
-			int[] y = { 6 + size/2, 6 - size/2, 6 };
-			g.fillPolygon(x,y,3);
 			g.setFont(gameFont.deriveFont(Font.BOLD, 10));
-			g.drawString("CURRENTLY PLAYING", this.getWidth()-130, 10);
+			g.drawString("CURRENTLY WATCHING", this.getWidth()-130, 10);
 		}
 	}
 	

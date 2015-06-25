@@ -8,7 +8,6 @@ import java.util.Random;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
-import org.gdesign.twitch.player.livestreamer.exception.LivestreamerMaxInstancesException;
 import org.gdesign.utils.Configuration;
 import org.gdesign.utils.SystemInfo;
 import org.gdesign.utils.SystemInfo.OperatingSystem;
@@ -26,7 +25,7 @@ public class LivestreamerFactory {
 		config 			= new Configuration("livestreamer.properties");
 	}
 	
-	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException, LivestreamerMaxInstancesException{
+	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException{
 		final String stream = args[0];
 		final String quality = args[1];
 		final int randomPort = generateRandomPort(

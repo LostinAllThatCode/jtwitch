@@ -1,7 +1,5 @@
 package org.gdesign.twitch.player.gui;
 
-import java.util.Properties;
-
 import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,7 +7,6 @@ import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.MainView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
-import org.gdesign.utils.Configuration;
 import org.json.simple.parser.ParseException;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
@@ -44,8 +41,6 @@ public class JTwitch{
         }
 	}
 	
-	Properties config = new Configuration("jtwitch.properties");
-	
 	public JTwitch() throws ParseException {
 		JFrame frame = new JFrame("JTwitch Player (0.1.alpha)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -54,7 +49,7 @@ public class JTwitch{
 		frame.setVisible(true);
 		
 		MainView mainView 	= new MainView(frame);
-		MainModel mainModel	= new MainModel(config.getProperty("username"));
+		MainModel mainModel	= new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
 	
 		controller.update(15000);

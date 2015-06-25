@@ -13,19 +13,18 @@ public class ChannelListModel {
 	private PropertyChangeListener listener;
 	private SwingPropertyChangeSupport propertyChange;
 	private List<ChannelModel> channels;
-	private String username;
 	
-	public ChannelListModel(final String username) {
+	public ChannelListModel() {
 		this.channels 		= Collections.synchronizedList(new ArrayList<ChannelModel>());
 		this.propertyChange = new SwingPropertyChangeSupport(this);
-		this.setUsername(username);
 	}
 	
 	public ChannelModel createChannel(String channelName, String displayName){
 		ChannelModel m = new ChannelModel(channelName);
 		m.setDisplayname(displayName);
 		m.addModelListener(listener);
-		addChannel(m);
+		channels.add(m);
+		propertyChange.firePropertyChange("addChannel", null, m);
 		return m;
 	}
 	
@@ -33,14 +32,9 @@ public class ChannelListModel {
 		propertyChange.addPropertyChangeListener(listener = prop);
     }
 	
-	public Collection<ChannelModel> getSortedChannels(){
+	public Collection<ChannelModel> getChannels(){
 		Collections.sort(channels);
 		return channels;
-	}
-	
-	private void addChannel(ChannelModel m){
-		channels.add(m);
-		propertyChange.firePropertyChange("addChannel", null, m);
 	}
 	
 	public void removeChannel(ChannelModel m){
@@ -53,18 +47,6 @@ public class ChannelListModel {
 			if (m.getName().compareTo(name)==0) return m;
 		}
 		return null;
-	}
-	
-	public int getChannelCount(){
-		return channels.size();
-	}
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(String username) {
-		this.username = username;
 	}
 
 }
