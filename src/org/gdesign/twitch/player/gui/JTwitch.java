@@ -42,7 +42,7 @@ public class JTwitch{
 	}
 	
 	public JTwitch() throws ParseException {
-		JFrame frame = new JFrame("JTwitch Player (0.1.alpha)");
+		JFrame frame = new JFrame("JTwitch Player (0.2.0)");
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(0, 0, 1280, 640);
 		frame.setLocationRelativeTo(null);
