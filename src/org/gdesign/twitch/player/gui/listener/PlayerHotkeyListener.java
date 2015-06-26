@@ -1,6 +1,7 @@
 package org.gdesign.twitch.player.gui.listener;
 
 import java.awt.event.KeyEvent;
+import java.util.logging.Level;
 
 import javax.swing.KeyStroke;
 
@@ -18,7 +19,7 @@ public class PlayerHotkeyListener implements HotKeyListener {
 	public PlayerHotkeyListener(MainController controller) {
 		this.controller = controller;
 		this.provider	= Provider.getCurrentProvider(false);
-		
+		Provider.logger.setLevel(Level.OFF);
 	}
 	
 	public void register(KeyStroke s){

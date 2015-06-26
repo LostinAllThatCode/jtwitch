@@ -19,10 +19,12 @@ public class LivestreamerFactory {
 	private static Random 		random;
 	private static Properties 	config;
 	private static LivestreamerInstance instance;
-		
+	private static String quality;
+	
 	static {
 		random 			= new Random();
 		config 			= new Configuration("livestreamer.properties");
+		quality			= config.getProperty("livestreamer-quality");
 	}
 	
 	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException{
@@ -66,8 +68,17 @@ public class LivestreamerFactory {
 		}
 	}
 	
+	public static void stopInstance(LivestreamerInstance live){
+		live.stopStream();
+		instance = null;
+	}
+	
+	public static void setDefaultQuality(String q){
+		quality = q;
+	}
+	
 	public static String getDefaultQuality(){
-		return config.getProperty("livestreamer-quality");
+		return quality;
 	}
 	
 	private static boolean checkLivestreamer(String cmd) throws IOException, InterruptedException{

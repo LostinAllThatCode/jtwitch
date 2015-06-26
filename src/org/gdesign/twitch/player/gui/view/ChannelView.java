@@ -107,7 +107,6 @@ public class ChannelView extends JPanel {
 	
 	public void setChannelAction(String action){
 		ResourceManager.fixFontSize(this.action,action);
-		repaint();
 	}
 	
 	public void setOnline(boolean online){
@@ -138,26 +137,22 @@ public class ChannelView extends JPanel {
 			name.setForeground(Color.WHITE);
 			game.setForeground(Color.WHITE);
 			viewers.setForeground(Color.WHITE);
-			action.setForeground(Color.WHITE);
-			
+			action.setForeground(Color.WHITE);		
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
+		repaint();
 	}
 
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (!getBackground().equals(bgColor)) g.setColor(Color.DARK_GRAY); else g.setColor(new Color(80,40,180).brighter());
+		if (this.game.getText().length() != 0) g.setColor(new Color(90,50,210).darker()); else g.setColor(Color.DARK_GRAY);
 		g.drawLine(0,this.getHeight()-1,this.getWidth(),this.getHeight()-1);
 		
 		if (action.getText().compareTo("PLAYING")==0){
-			if (getBackground().equals((Color.WHITE))) {
-				g.setColor(bgColor);
-			} else {
-				g.setColor(new Color(255,255,255,100));
-			}
+			g.setColor(name.getForeground());
 			g.setFont(gameFont.deriveFont(Font.BOLD, 10));
-			g.drawString("CURRENTLY WATCHING", this.getWidth()-130, 10);
+			g.drawString("CURRENTLY WATCHING", this.getWidth()-140, 10);
 		}
 	}
 	

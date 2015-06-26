@@ -35,7 +35,7 @@ public class JTwitch{
         } else {
         	LogManager.getLogger().error("Can't find vlc/livestreamer natives. Please configure livestreamer.properties.");
         	JOptionPane.showMessageDialog(null, "Can't find vlc/livestreamer natives. Please configure livestreamer.properties.\n"
-        			+ "1) You need VideoLAN Player installed on your system. For Java(64Bit) you need Vlc(64Bit) and vice versa.\n"
+        			+ "1) You need VideoLAN Player installed on your system. For Java(64Bit) you need VLC(64Bit) and vice versa.\n"
         			+ "2) You need Livestreamer. See details in livestreamer.properties to set it up correctly.",
         			"Libvlc/Livestreamer natives discovery", JOptionPane.OK_CANCEL_OPTION);
         }
@@ -54,7 +54,6 @@ public class JTwitch{
 	
 		controller.update(15000);
 	}
-	
 	
 	public static boolean checkDependencies(){
 		if (new NativeDiscovery().discover() && LivestreamerFactory.discover()){

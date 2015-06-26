@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.0.2</version>
+  <version>0.2.0</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -22,7 +22,6 @@
         		</descriptorRefs>
         		<appendAssemblyId>false</appendAssemblyId>
         		<finalName>${project.build.finalName}</finalName>
-        		<outputDirectory>${project.basedir}/release/</outputDirectory>
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>

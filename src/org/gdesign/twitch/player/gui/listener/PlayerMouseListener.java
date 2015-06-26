@@ -1,8 +1,11 @@
 package org.gdesign.twitch.player.gui.listener;
 
+import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+
+import javax.swing.JMenuItem;
 
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.player.gui.controller.MainController;
@@ -22,11 +25,6 @@ public class PlayerMouseListener extends MouseAdapter {
 	}
 	
 	@Override
-	public void mouseMoved(MouseEvent e) {
-		LogManager.getLogger().debug(e.getXOnScreen());
-	}
-	
-	@Override
 	public void mouseClicked(MouseEvent e) {
 		if (e.getComponent().isEnabled()){
 			if (e.getComponent().getClass().equals(ChannelView.class)){
@@ -36,6 +34,7 @@ public class PlayerMouseListener extends MouseAdapter {
 						LivestreamerInstance i = LivestreamerFactory.startInstance("twitch.tv/"+channel.getName(), LivestreamerFactory.getDefaultQuality());
 						i.addListener(controller.getModel().getEmbeddedPlayerModel());
 						controller.getView().getEmbeddedPlayerView().setControlValue("STATUS", "Starting livestreamer instance for "+i.getStream());
+						((ChannelView) e.getComponent()).setHover(false);
 					} catch (LivestreamerAlreadyRunningException  e1) {
 						LogManager.getLogger().error(e1);
 					} 
@@ -53,10 +52,25 @@ public class PlayerMouseListener extends MouseAdapter {
 					case VOLUME:
 						controller.getView().getEmbeddedPlayerView().setVolume(e.getX());
 						break;
+					case QUALITY:
+						controller.getView().getEmbeddedPlayerView().toggleQualityPopup();
 					default:
 						break;
 				}
-				
+			} else if (e.getComponent().getClass().equals(JMenuItem.class)){
+				String quality = ((JMenuItem) e.getComponent()).getText();
+				LivestreamerFactory.setDefaultQuality(quality.toLowerCase());
+				LivestreamerInstance instance = controller.getModel().getEmbeddedPlayerModel().getInstance();
+				if (instance != null) {
+					try {
+						LivestreamerFactory.stopInstance(instance);
+						LivestreamerInstance newInstance = LivestreamerFactory.startInstance(instance.getStream(), quality);
+						newInstance.addListener(controller.getModel().getEmbeddedPlayerModel());
+					} catch (LivestreamerAlreadyRunningException e1) {
+						LogManager.getLogger().error(e1);
+					}
+				}
+				controller.getView().getEmbeddedPlayerView().toggleQualityPopup();
 			}
 		}
 	}
@@ -70,8 +84,11 @@ public class PlayerMouseListener extends MouseAdapter {
 			}
 		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
+		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
+			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
 		}
 	}
+	
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
@@ -81,9 +98,10 @@ public class PlayerMouseListener extends MouseAdapter {
 			}		
 		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(false);
-		}	
+		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
+			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
-	
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {

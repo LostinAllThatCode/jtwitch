@@ -85,10 +85,10 @@ public class ChannelModel implements Comparable<ChannelModel>{
 		if (this.viewers > o.getViewers()) return -1;
 		else if (this.viewers < o.getViewers()) return 1;
 		else if (viewers == 0 && o.getViewers() == 0) {
+			if (isOnline() && !o.isOnline()) return -1;
+			if (!isOnline() && o.isOnline()) return 1;
 			return name.compareTo(o.getName());
-		}
-		else if (this.viewers == o.getViewers()) return 0;
-		else return 0;
+		} else return 0;
 	}
 	
 	@Override

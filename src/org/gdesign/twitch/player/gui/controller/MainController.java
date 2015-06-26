@@ -42,7 +42,7 @@ public class MainController implements PropertyChangeListener{
 		this.view = view;
 		this.model = model;
 		this.twitch = new HttpRequest();
-		
+
 		this.mouseListener = new PlayerMouseListener(this);
 		
 		this.hotkeyListener = new PlayerHotkeyListener(this);
@@ -102,7 +102,7 @@ public class MainController implements PropertyChangeListener{
 						Thread.sleep(interval);
 						time+=interval;
 					} catch (ParseException | InterruptedException e) {
-						LogManager.getLogger().error(e.getMessage());
+						LogManager.getLogger().error(e);
 					}
 				}
 			}
@@ -158,13 +158,13 @@ public class MainController implements PropertyChangeListener{
 						pv.playMedia(instance.getMRL(), "");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).setAction("PLAYING");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).fireUpdate();
-						pv.setControlValue("STATUS", "Fetching data from "+instance.getMRL()+". "+instance.getStream());
+						pv.setControlValue("STATUS", "["+instance.getMRL()+"] ["+instance.getQuality()+"] Fetching data from "+instance.getStream()+"...");
 					} else if (evt.getPropertyName().equals("streamEnded")){
 						LivestreamerInstance instance = (LivestreamerInstance) evt.getNewValue();
 						pv.stopMedia();
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).setAction("");
 						cm.getChannel(instance.getStream().substring(10, instance.getStream().length())).fireUpdate();
-						pv.setControlValue("STATUS", "Stream ended/interrupted. "+instance.getStream());
+						pv.setControlValue("STATUS", "["+instance.getMRL()+"] Stream closed.");
 					}
 				}
 			}

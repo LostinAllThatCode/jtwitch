@@ -3,12 +3,18 @@ package org.gdesign.twitch.player.gui.view;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.Point;
 import java.awt.event.MouseListener;
 
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 
 import org.gdesign.twitch.player.gui.view.EmbeddedPlayerControlView.Control;
 import org.gdesign.utils.SystemInfo;
@@ -26,9 +32,11 @@ public class EmbeddedPlayerView extends JPanel{
 	private static final long serialVersionUID = 1L;	
 	private int maxVolume,defVolume;
 	private JPanel controls;
+	private JPopupMenu popupQuali;
 	
 	public EmbeddedPlayerView(final JFrame j){
 		setLayout(new BorderLayout());
+		
 		maxVolume = 200;
 		defVolume = maxVolume/4;
 		
@@ -48,18 +56,51 @@ public class EmbeddedPlayerView extends JPanel{
 		controls = new JPanel();
 		controls.setBackground(Color.DARK_GRAY);
 		controls.setLayout(new GridBagLayout());
+		
 		GridBagConstraints c = new GridBagConstraints();
 		
 		EmbeddedPlayerControlView playstop = new EmbeddedPlayerControlView(Control.PLAY_STOP);
-		EmbeddedPlayerControlView fullscreen = new EmbeddedPlayerControlView(Control.FULLSCREEN);
-		fullscreen.setActive(true);
-		
-		EmbeddedPlayerControlView vol = new EmbeddedPlayerControlView(Control.VOLUME);
-		vol.setValue(defVolume);
-		vol.setActive(true);
-		
+		EmbeddedPlayerControlView fullscreen = new EmbeddedPlayerControlView(Control.FULLSCREEN,true);
+		EmbeddedPlayerControlView vol = new EmbeddedPlayerControlView(Control.VOLUME,true);		
 		EmbeddedPlayerControlView status = new EmbeddedPlayerControlView(Control.STATUS);
-		status.setValue(" ");
+		EmbeddedPlayerControlView quality = new EmbeddedPlayerControlView(Control.QUALITY,true);
+		
+		popupQuali = new JPopupMenu();
+		popupQuali.setLayout(new BoxLayout(popupQuali,BoxLayout.Y_AXIS));
+		popupQuali.setBackground(Color.DARK_GRAY);
+		popupQuali.setBorder(BorderFactory.createEmptyBorder(0, -2, 0, 0));
+		
+		JMenuItem source = new JMenuItem("SOURCE");
+		source.setBackground(Color.DARK_GRAY);
+		source.setFont(new Font("Arial",Font.PLAIN,10));
+		source.setForeground(Color.WHITE.darker());
+		popupQuali.add(source);
+
+		JMenuItem high = new JMenuItem("HIGH");
+		high.setBackground(Color.DARK_GRAY);
+		high.setFont(new Font("Arial",Font.PLAIN,10));
+		high.setForeground(Color.WHITE.darker());
+		popupQuali.add(high);
+		
+		JMenuItem medium = new JMenuItem("MEDIUM");
+		medium.setBackground(Color.DARK_GRAY);
+		medium.setFont(new Font("Arial",Font.PLAIN,10));
+		medium.setForeground(Color.WHITE.darker());
+		popupQuali.add(medium);
+		
+		JMenuItem low = new JMenuItem("LOW");
+		low.setBackground(Color.DARK_GRAY);
+		low.setFont(new Font("Arial",Font.PLAIN,10));
+		low.setForeground(Color.WHITE.darker());
+		popupQuali.add(low);
+
+		JMenuItem audio = new JMenuItem("AUDIO");
+		audio.setBackground(Color.DARK_GRAY);
+		audio.setFont(new Font("Arial",Font.PLAIN,10));
+		audio.setForeground(Color.WHITE.darker());
+		popupQuali.add(audio);
+
+		add(popupQuali);
 		
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.WEST;
@@ -82,13 +123,18 @@ public class EmbeddedPlayerView extends JPanel{
 		c.anchor = GridBagConstraints.WEST;
 		c.gridx = 3;
 		c.gridy = 0;
+		controls.add(quality,c);
+		c.fill = GridBagConstraints.HORIZONTAL;
+		c.anchor = GridBagConstraints.WEST;
+		c.gridx = 4;
+		c.gridy = 0;
 		controls.add(fullscreen,c);
 		
 		this.add(embeddedPlayer,BorderLayout.CENTER);
 		this.add(controls,BorderLayout.PAGE_END);
 	}
 	
-	public EmbeddedPlayerControlView getControl(String name){
+	private EmbeddedPlayerControlView getControl(String name){
 		for (Component c : controls.getComponents()) {
 			if (c.getName() != null){
 				if (name.compareTo(c.getName()) == 0) return (EmbeddedPlayerControlView) c;
@@ -132,9 +178,25 @@ public class EmbeddedPlayerView extends JPanel{
 		return embeddedPlayer.getMediaPlayer().isFullScreen();
 	}
 	
+	public void toggleQualityPopup(){
+		Point p = getControl("QUALITY").getLocationOnScreen();
+		p.translate(-21, -85);
+		popupQuali.setLocation(p);
+		popupQuali.setVisible(!popupQuali.isVisible());
+	}
+	
+	public void setQuality(String quality){
+		for (Component c : popupQuali.getComponents()){
+			JMenuItem i = (JMenuItem) c;
+			if (i.getText().compareTo(quality) == 0) i.setFont(i.getFont().deriveFont(Font.BOLD)); else i.setFont(i.getFont().deriveFont(Font.PLAIN));
+		}
+	}
+	
+	
 	@Override
 	public synchronized void addMouseListener(MouseListener l) {
 		for (Component c : controls.getComponents()) c.addMouseListener(l);
+		for (Component d : popupQuali.getComponents()) d.addMouseListener(l);
 	}
-
+	
 }
