@@ -10,9 +10,10 @@ import java.util.Properties;
 import javax.swing.KeyStroke;
 
 import org.apache.logging.log4j.LogManager;
-import org.gdesign.twitch.api.json.type.TChannel;
-import org.gdesign.twitch.api.json.type.TStream;
-import org.gdesign.twitch.api.json.utils.HttpRequest;
+import org.gdesign.twitch.api.TwitchAPI;
+import org.gdesign.twitch.api.resource.follows.Follows;
+import org.gdesign.twitch.api.resource.streams.StreamInfo;
+import org.gdesign.twitch.api.resource.users.UserFollowedChannels;
 import org.gdesign.twitch.player.gui.listener.PlayerMouseListener;
 import org.gdesign.twitch.player.gui.listener.PlayerHotkeyListener;
 import org.gdesign.twitch.player.gui.model.ChannelListModel;
@@ -26,12 +27,13 @@ import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.utils.Configuration;
 import org.json.simple.parser.ParseException;
 
+import com.google.gson.Gson;
+
 
 public class MainController implements PropertyChangeListener{
 	
 	private MainView view;
 	private MainModel model;
-	private HttpRequest twitch;
 	private PlayerMouseListener mouseListener;
 	private PlayerHotkeyListener hotkeyListener;
 	private Properties config;
@@ -41,7 +43,6 @@ public class MainController implements PropertyChangeListener{
 		
 		this.view = view;
 		this.model = model;
-		this.twitch = new HttpRequest();
 
 		this.mouseListener = new PlayerMouseListener(this);
 		
@@ -61,47 +62,51 @@ public class MainController implements PropertyChangeListener{
 	
 	private void updateChannelModel(ChannelModel m) throws ParseException {
 		if (m != null){
-			TStream stream = twitch.getStream(m.getName());
-			if (m.getGame().compareTo(stream.getString("game")) != 0) m.setGame(stream.getString("game"));
-			if (m.getViewers() != Integer.valueOf(stream.getInt("viewers"))) m.setViewers(Integer.valueOf(stream.getInt("viewers")));
-			if (m.isOnline() != stream.isOnline()) m.setOnline(stream.isOnline());
+			StreamInfo streamInfo = new Gson().fromJson(new TwitchAPI().request("https://api.twitch.tv/kraken/streams/"+m.getName(), null),StreamInfo.class);
+			if (streamInfo.stream != null){
+				if (m.getGame().compareTo(streamInfo.stream.game) != 0) m.setGame(streamInfo.stream.game);
+				if (m.getViewers() != streamInfo.stream.viewers) m.setViewers(streamInfo.stream.viewers);
+				if (!m.isOnline()) m.setOnline(true);
+			} else {
+				m.setGame("");
+				m.setViewers(0);
+				m.setOnline(false);
+			}
 			m.fireUpdate();
-			view.getChannelListView().getChannel(m.getName()).setEnabled(true);
 		}
 	}
 
 	public void update(final long interval) throws ParseException{
 		new Thread(new Runnable() {			
-			long time = 0;
-			
-			@Override
+			long time = interval * 4;
 			public void run() {
 				while (true) {
 					try {
-						if (model.getChannelListModel().getChannels().size() == 0) {
-								for (TChannel channel : twitch.getFollows(config.getProperty("username")).getChannels())
-									updateChannelModel(model.getChannelListModel().createChannel(channel.getString("name"),channel.getString("display_name")));
+						if (time / interval >= 4) {
+							List<ChannelModel> copy = new ArrayList<ChannelModel>(model.getChannelListModel().getChannels());
+							UserFollowedChannels channels =  new Gson().fromJson(new TwitchAPI().request("https://api.twitch.tv/kraken/users/"+config.getProperty("username")+"/follows/channels", null),UserFollowedChannels.class);
+							for (Follows f : channels.follows){
+								ChannelModel channelModel = model.getChannelListModel().getChannel(f.channel.name);	
+								if (channelModel == null){
+									updateChannelModel(model.getChannelListModel().createChannel(f.channel.name, f.channel.display_name));				
+								} else {
+									updateChannelModel(channelModel);
+									copy.remove(channelModel);
+								}
+							}
+							for (ChannelModel rem : copy) model.getChannelListModel().removeChannel(rem);
+							view.getChannelListView().setEnabled(true);
+							view.getChannelListView().sortChannels(model.getChannelListModel().getChannels());
+							time = 0;
 						} else {
 							for (ChannelModel m : model.getChannelListModel().getChannels()) if (m.isOnline()) updateChannelModel(m);
-							if (time / interval >= 4) {
-								List<ChannelModel> copy = new ArrayList<>(model.getChannelListModel().getChannels());
-								for (TChannel channel : twitch.getFollows(config.getProperty("username")).getChannels()){
-									ChannelModel channelModel = model.getChannelListModel().getChannel(channel.getString("name"));
-									if (channelModel == null){
-										updateChannelModel(model.getChannelListModel().createChannel(channel.getString("name"),channel.getString("display_name")));					
-										view.getChannelListView().setEnabled(true);
-									} else {
-										updateChannelModel(channelModel);
-										copy.remove(channelModel);
-									}
-								}
-								for (ChannelModel rem : copy) model.getChannelListModel().removeChannel(rem);
-								time = 0;
-							}
 						}
+						view.revalidate();
 						Thread.sleep(interval);
 						time+=interval;
-					} catch (ParseException | InterruptedException e) {
+						
+					} catch (Exception e) {
+						e.printStackTrace();
 						LogManager.getLogger().error(e);
 					}
 				}
@@ -109,8 +114,6 @@ public class MainController implements PropertyChangeListener{
 		}).start();
 	}
 
-	
-	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
 		LogManager.getLogger().trace(evt);
 		if (evt.getSource().getClass().equals(ChannelListModel.class)){

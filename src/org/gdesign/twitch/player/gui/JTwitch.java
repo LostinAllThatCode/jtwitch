@@ -3,6 +3,7 @@ package org.gdesign.twitch.player.gui;
 import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
+import org.gdesign.twitch.api.TwitchAPI;
 import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.MainView;
@@ -22,7 +23,6 @@ public class JTwitch{
 		
         if (checkDependencies()) {
             SwingUtilities.invokeLater(new Runnable() {
-                @Override
                 public void run() {
                 	try {
 						new JTwitch();
@@ -52,6 +52,8 @@ public class JTwitch{
 		MainModel mainModel	= new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
 	
+		LogManager.getLogger().debug(new TwitchAPI().authorized());
+		
 		controller.update(15000);
 	}
 	

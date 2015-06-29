@@ -13,7 +13,7 @@ public class ResourceManager {
 	private static HashMap<String, Font> fonts;
 	
 	static {
-		fonts = new HashMap<>();
+		fonts = new HashMap<String, Font>();
 		createFont("gnuolane.ttf");
 	}
 	

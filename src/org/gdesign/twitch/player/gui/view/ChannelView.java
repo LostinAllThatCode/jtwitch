@@ -4,9 +4,12 @@ import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.GradientPaint;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
+import java.awt.RenderingHints;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
@@ -146,14 +149,16 @@ public class ChannelView extends JPanel {
 	@Override
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (this.game.getText().length() != 0) g.setColor(new Color(90,50,210).darker()); else g.setColor(Color.DARK_GRAY);
-		g.drawLine(0,this.getHeight()-1,this.getWidth(),this.getHeight()-1);
-		
-		if (action.getText().compareTo("PLAYING")==0){
-			g.setColor(name.getForeground());
-			g.setFont(gameFont.deriveFont(Font.BOLD, 10));
-			g.drawString("CURRENTLY WATCHING", this.getWidth()-140, 10);
+		Graphics2D g2d = (Graphics2D) g;
+		g2d.setFont(new Font("Arial",Font.PLAIN,10));
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		if (this.action.getText().length() != 0){
+			GradientPaint redtowhite = new GradientPaint(0, 20,getBackground(), this.getWidth(), 20, bgColor.darker());
+			g2d.setPaint(redtowhite);
+			g2d.fillRect(0, 0, this.getWidth(), 70);
 		}
+		if (this.game.getText().length() != 0) g2d.setColor(new Color(90,50,210).darker()); else g2d.setColor(Color.DARK_GRAY);
+		g2d.drawLine(0,this.getHeight()-1,this.getWidth(),this.getHeight()-1);
 	}
 	
 }

@@ -24,12 +24,10 @@ public class EmbeddedPlayerModel implements LivestreamerListener{
 		return instance;
 	}
 
-	@Override
 	public void streamStarted(LivestreamerInstance livestreamer) {
 		propertyChange.firePropertyChange("streamStarted",null,instance = livestreamer);
 	}
-
-	@Override
+	
 	public void streamEnded(LivestreamerInstance livestreamer) {
 		propertyChange.firePropertyChange("streamEnded",null,livestreamer);
 	}

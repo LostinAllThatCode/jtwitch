@@ -95,7 +95,7 @@ public class LivestreamerFactory {
 				LIVESTREAMER_PATH = "";
 				found = true;
 			}
-		} catch (IOException | InterruptedException e) {
+		} catch (Exception e) {
 			String configPath = config.getProperty("livestreamer");
 			try {
 				if (checkLivestreamer(configPath)) {
@@ -103,7 +103,7 @@ public class LivestreamerFactory {
 					LIVESTREAMER_PATH = configPath;
 					found = true;
 				}
-			} catch (IOException | InterruptedException e1) {
+			} catch (Exception  e1) {
 				if (SystemInfo.getOS().equals(OperatingSystem.WIN)){
 					File file = new File("C:/Program Files (x86)/livestreamer/livestreamer.exe");
 					if (file.exists()) {

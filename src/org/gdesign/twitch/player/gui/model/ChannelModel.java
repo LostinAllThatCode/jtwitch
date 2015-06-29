@@ -80,7 +80,6 @@ public class ChannelModel implements Comparable<ChannelModel>{
 		}
 	}
 	
-	@Override
 	public int compareTo(ChannelModel o) {
 		if (this.viewers > o.getViewers()) return -1;
 		else if (this.viewers < o.getViewers()) return 1;
@@ -90,8 +89,7 @@ public class ChannelModel implements Comparable<ChannelModel>{
 			return name.compareTo(o.getName());
 		} else return 0;
 	}
-	
-	@Override
+
 	public String toString() {
 		return "["+name+","+game+","+viewers+","+action+","+online+"]";
 	}

@@ -26,8 +26,6 @@ public class PlayerHotkeyListener implements HotKeyListener {
 		provider.register(s, this);
 	}
 	
-
-	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:
