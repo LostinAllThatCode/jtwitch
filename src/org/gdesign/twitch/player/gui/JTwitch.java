@@ -42,7 +42,8 @@ public class JTwitch{
 	}
 	
 	public JTwitch() throws ParseException {
-		JFrame frame = new JFrame("JTwitch Player (0.2.0)");
+		JFrame frame = new JFrame("JTwitch Player "+getClass().getPackage().getImplementationVersion());
+		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("jtwitchplayer.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(0, 0, 1280, 640);
 		frame.setLocationRelativeTo(null);

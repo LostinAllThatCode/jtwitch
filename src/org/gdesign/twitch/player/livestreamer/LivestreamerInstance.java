@@ -14,6 +14,7 @@ public class LivestreamerInstance extends Thread implements Runnable{
 	private String quality;
 	private int port;
 	private String stream;
+	private String channel;
 	private String[] cmd;
 	private List<LivestreamerListener> listener;
 	
@@ -99,6 +100,14 @@ public class LivestreamerInstance extends Thread implements Runnable{
 
 	public void setQuality(String quality) {
 		this.quality = quality;
+	}
+
+	public String getChannel() {
+		return channel;
+	}
+
+	public void setChannel(String channel) {
+		this.channel = channel;
 	}
 
 }

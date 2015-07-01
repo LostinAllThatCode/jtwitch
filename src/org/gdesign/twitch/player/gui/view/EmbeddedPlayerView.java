@@ -67,13 +67,14 @@ public class EmbeddedPlayerView extends JPanel{
 		
 		popupQuali = new JPopupMenu();
 		popupQuali.setLayout(new BoxLayout(popupQuali,BoxLayout.Y_AXIS));
-		popupQuali.setBackground(Color.DARK_GRAY);
 		popupQuali.setBorder(BorderFactory.createEmptyBorder(0, -2, 0, 0));
+
 		
 		JMenuItem source = new JMenuItem("SOURCE");
 		source.setBackground(Color.DARK_GRAY);
 		source.setFont(new Font("Arial",Font.PLAIN,10));
 		source.setForeground(Color.WHITE.darker());
+		source.setOpaque(true);
 		popupQuali.add(source);
 
 		JMenuItem high = new JMenuItem("HIGH");

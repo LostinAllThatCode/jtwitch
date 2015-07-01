@@ -44,6 +44,7 @@ public class MainView extends JPanel{
 	
 	@Override
 	public void addMouseListener(MouseListener l) {
+		super.addMouseListener(l);
 		channelListview.addMouseListener(l);
 		playerView.addMouseListener(l);
 	}

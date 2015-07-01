@@ -1,4 +1,4 @@
-package org.gdesign.twitch.player.gui.listener;
+package org.gdesign.twitch.player.gui.controller;
 
 import java.awt.Cursor;
 import java.awt.event.MouseAdapter;
@@ -8,7 +8,6 @@ import java.awt.event.MouseWheelEvent;
 import javax.swing.JMenuItem;
 
 import org.apache.logging.log4j.LogManager;
-import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.ChannelModel;
 import org.gdesign.twitch.player.gui.view.ChannelView;
 import org.gdesign.twitch.player.gui.view.EmbeddedPlayerControlView;
@@ -28,13 +27,12 @@ public class PlayerMouseListener extends MouseAdapter {
 	public void mouseClicked(MouseEvent e) {
 		if (e.getComponent().isEnabled()){
 			if (e.getComponent().getClass().equals(ChannelView.class)){
-				ChannelModel channel = controller.getModel().getChannelListModel().getChannel(e.getComponent().getName());
+				ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
 				if (channel.isOnline()){
 					try {
 						LivestreamerInstance i = LivestreamerFactory.startInstance("twitch.tv/"+channel.getName(), LivestreamerFactory.getDefaultQuality());
-						i.addListener(controller.getModel().getEmbeddedPlayerModel());
-						controller.getView().getEmbeddedPlayerView().setControlValue("STATUS", "Starting livestreamer instance for "+i.getStream());
-						((ChannelView) e.getComponent()).setHover(false);
+						i.addListener(controller);
+						((ChannelView)e.getComponent()).setHover(false);
 					} catch (LivestreamerAlreadyRunningException  e1) {
 						LogManager.getLogger().error(e1);
 					} 
@@ -42,35 +40,35 @@ public class PlayerMouseListener extends MouseAdapter {
 			} else if (e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
 				switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
 					case PLAY_STOP:
-						if (controller.getView().getEmbeddedPlayerView().isPlaying()) controller.getModel().getEmbeddedPlayerModel().getInstance().stopStream();
+						if (controller.view.getEmbeddedPlayerView().isPlaying())  controller.model.getEmbeddedPlayerModel().getInstance().stopStream();
 						break;
 					case FULLSCREEN:
-						controller.getView().getEmbeddedPlayerView().toggleFullscreen();
-						if (controller.getView().getEmbeddedPlayerView().isFullscreen()) controller.getView().getChannelListView().setVisible(false);
-						else controller.getView().getChannelListView().setVisible(true);
+						controller.view.getEmbeddedPlayerView().toggleFullscreen();
+						if (controller.view.getEmbeddedPlayerView().isFullscreen()) controller.view.getChannelListView().setVisible(false);
+						else controller.view.getChannelListView().setVisible(true);
 						break;
 					case VOLUME:
-						controller.getView().getEmbeddedPlayerView().setVolume(e.getX());
+						controller.view.getEmbeddedPlayerView().setVolume(e.getX());
 						break;
 					case QUALITY:
-						controller.getView().getEmbeddedPlayerView().toggleQualityPopup();
+						controller.view.getEmbeddedPlayerView().toggleQualityPopup();
 					default:
 						break;
 				}
 			} else if (e.getComponent().getClass().equals(JMenuItem.class)){
 				String quality = ((JMenuItem) e.getComponent()).getText();
 				LivestreamerFactory.setDefaultQuality(quality.toLowerCase());
-				LivestreamerInstance instance = controller.getModel().getEmbeddedPlayerModel().getInstance();
+				LivestreamerInstance instance = controller.model.getEmbeddedPlayerModel().getInstance();
 				if (instance != null) {
 					try {
 						LivestreamerFactory.stopInstance(instance);
 						LivestreamerInstance newInstance = LivestreamerFactory.startInstance(instance.getStream(), quality);
-						newInstance.addListener(controller.getModel().getEmbeddedPlayerModel());
+						newInstance.addListener(controller);
 					} catch (LivestreamerAlreadyRunningException e1) {
 						LogManager.getLogger().error(e1);
 					}
 				}
-				controller.getView().getEmbeddedPlayerView().toggleQualityPopup();
+				controller.view.getEmbeddedPlayerView().toggleQualityPopup();
 			}
 		}
 	}
@@ -78,7 +76,7 @@ public class PlayerMouseListener extends MouseAdapter {
 	@Override
 	public void mouseEntered(MouseEvent e) {
 		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-			ChannelModel channel = controller.getModel().getChannelListModel().getChannel(e.getComponent().getName());
+			ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
 				((ChannelView) e.getComponent()).setHover(true);
 			}
@@ -92,7 +90,7 @@ public class PlayerMouseListener extends MouseAdapter {
 	@Override
 	public void mouseExited(MouseEvent e) {
 		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-			ChannelModel channel = controller.getModel().getChannelListModel().getChannel(e.getComponent().getName());
+			ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
 				((ChannelView) e.getComponent()).setHover(false);
 			}		
@@ -105,8 +103,8 @@ public class PlayerMouseListener extends MouseAdapter {
 	
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getWheelRotation() < 0) controller.getView().getEmbeddedPlayerView().setVolume(controller.getView().getEmbeddedPlayerView().getVolume() + 10); 
-		else controller.getView().getEmbeddedPlayerView().setVolume(controller.getView().getEmbeddedPlayerView().getVolume() - 10);
+		if (e.getWheelRotation() < 0) controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() + 10); 
+		else controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() - 10);
 	}
 	
 }

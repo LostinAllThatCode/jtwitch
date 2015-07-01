@@ -1,13 +1,8 @@
 package org.gdesign.twitch.player.gui.model;
 
-import java.beans.PropertyChangeListener;
-
-import javax.swing.event.SwingPropertyChangeSupport;
-
 public class ChannelModel implements Comparable<ChannelModel>{
 	
-	private SwingPropertyChangeSupport propertyChange;
-	private boolean online,hasChanged;
+	private boolean online;
 	private String displayName,name,game,action;
 	private int viewers;
 	
@@ -16,8 +11,6 @@ public class ChannelModel implements Comparable<ChannelModel>{
 		this.game = "";
 		this.viewers = 0;
 		this.action = "";
-		this.hasChanged = true;
-		propertyChange = new SwingPropertyChangeSupport(this);
 	}
 	
 	public boolean isOnline(){
@@ -46,38 +39,22 @@ public class ChannelModel implements Comparable<ChannelModel>{
 	
 	public void setOnline(boolean online){
 		this.online = online;
-		hasChanged = true;
 	}
 	
 	public void setDisplayname(String displayName) {
 		this.displayName = displayName;
-		hasChanged = true;
 	}
 	
 	public void setGame(String game){
 		this.game = game;
-		hasChanged = true;
 	}
 	
 	public void setViewers(int viewers){
 		this.viewers = viewers;
-		hasChanged = true;
 	}
 	
 	public void setAction(String action){
 		this.action = action;
-		hasChanged = true;
-	}
-	
-	public void addModelListener(PropertyChangeListener prop) {
-		propertyChange.addPropertyChangeListener(prop);
-    }
-	
-	public void fireUpdate(){
-		if (hasChanged) {
-			propertyChange.firePropertyChange("updatedChannel", null, this);
-			hasChanged = false;
-		}
 	}
 	
 	public int compareTo(ChannelModel o) {

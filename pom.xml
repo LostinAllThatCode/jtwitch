@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.2.2</version>
+  <version>0.2.2.0</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -20,12 +20,12 @@
         		<descriptorRefs>
           			<descriptorRef>jar-with-dependencies</descriptorRef>
         		</descriptorRefs>
-        		<appendAssemblyId>false</appendAssemblyId>
-        		<finalName>${project.build.finalName}</finalName>
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>
             			<mainClass>org.gdesign.twitch.player.gui.JTwitch</mainClass>
+                		<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
           			</manifest>
         		</archive>
       		</configuration>

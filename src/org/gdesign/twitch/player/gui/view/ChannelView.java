@@ -143,7 +143,6 @@ public class ChannelView extends JPanel {
 			action.setForeground(Color.WHITE);		
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
-		repaint();
 	}
 
 	@Override
@@ -152,8 +151,8 @@ public class ChannelView extends JPanel {
 		Graphics2D g2d = (Graphics2D) g;
 		g2d.setFont(new Font("Arial",Font.PLAIN,10));
 		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		if (this.action.getText().length() != 0){
-			GradientPaint redtowhite = new GradientPaint(0, 20,getBackground(), this.getWidth(), 20, bgColor.darker());
+		if (this.action.getText().length() != 0 && getBackground() != Color.WHITE){
+			GradientPaint redtowhite = new GradientPaint(0, 20,bgColor.brighter(), this.getWidth(), 20, getBackground());
 			g2d.setPaint(redtowhite);
 			g2d.fillRect(0, 0, this.getWidth(), 70);
 		}
