@@ -12,53 +12,59 @@ import javax.swing.JScrollPane;
 
 import org.gdesign.twitch.player.gui.model.ChannelModel;
 
-public class ChannelListView extends JScrollPane{
+public class ChannelListView extends JScrollPane {
 
 	private static final long serialVersionUID = -4246339204285816080L;
-	
+
 	private JPanel channelList;
 
 	public ChannelListView() {
 		channelList = new JPanel();
 		channelList.setLayout(new BoxLayout(channelList, BoxLayout.Y_AXIS));
 		channelList.setBackground(Color.DARK_GRAY.darker());
-		
-        setViewportView(channelList);
-        setBorder(BorderFactory.createEmptyBorder());
-        
-        getVerticalScrollBar().setPreferredSize(new Dimension(5, Integer.MAX_VALUE));
-        getHorizontalScrollBar().setPreferredSize(new Dimension(Integer.MAX_VALUE, 0));
-        getVerticalScrollBar().setUnitIncrement(10);
-        getVerticalScrollBar().setUI(new ChannelListScrollBarView());   
-        
-		setMinimumSize(new Dimension(250,Integer.MAX_VALUE));
-		setPreferredSize(new Dimension(250,Integer.MAX_VALUE));
-		setMaximumSize(new Dimension(250,Integer.MAX_VALUE));
+
+		setViewportView(channelList);
+		setBorder(BorderFactory.createEmptyBorder());
+
+		getVerticalScrollBar().setPreferredSize(
+				new Dimension(5, Integer.MAX_VALUE));
+		getHorizontalScrollBar().setPreferredSize(
+				new Dimension(Integer.MAX_VALUE, 0));
+		getVerticalScrollBar().setUnitIncrement(10);
+		getVerticalScrollBar().setUI(new ChannelListScrollBarView());
+
+		setMinimumSize(new Dimension(250, Integer.MAX_VALUE));
+		setPreferredSize(new Dimension(250, Integer.MAX_VALUE));
+		setMaximumSize(new Dimension(250, Integer.MAX_VALUE));
 	}
-	
-	public void removeChannel(String channelName){
+
+	public void removeChannel(String channelName) {
 		for (Component c : channelList.getComponents()) {
-			if (c.getName().compareTo(channelName) == 0) channelList.remove(c);
+			if (c.getName().compareTo(channelName) == 0)
+				channelList.remove(c);
 		}
 	}
-	
-	public ChannelView getChannel(String channelName){
+
+	public ChannelView getChannel(String channelName) {
 		for (Component c : channelList.getComponents()) {
-			if (c.getName().compareTo(channelName) == 0) return (ChannelView) c;
+			if (c.getName().compareTo(channelName) == 0)
+				return (ChannelView) c;
 		}
 		return null;
 	}
-	
-	public void addChannel(ChannelView view){
+
+	public void addChannel(ChannelView view) {
 		channelList.add(view);
 	}
-	
-	public synchronized void sortChannels(Collection<ChannelModel> channels){
+
+	public synchronized void sortChannels(Collection<ChannelModel> channels) {
 		Component[] comps = channelList.getComponents();
 		channelList.removeAll();
 		for (ChannelModel m : channels) {
 			for (Component c : comps) {
-				if (c.getClass().equals(ChannelView.class) && c.getName().compareTo(m.getName()) == 0) channelList.add(c);
+				if (c.getClass().equals(ChannelView.class)
+						&& c.getName().compareTo(m.getName()) == 0)
+					channelList.add(c);
 			}
 		}
 		channelList.validate();
@@ -70,5 +76,5 @@ public class ChannelListView extends JScrollPane{
 			c.setEnabled(enabled);
 		}
 	}
-	
+
 }

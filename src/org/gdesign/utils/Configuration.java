@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.util.Properties;
 
-public class Configuration extends Properties{
-	
+public class Configuration extends Properties {
+
 	/**
 	 * 
 	 */
@@ -13,9 +13,10 @@ public class Configuration extends Properties{
 
 	public Configuration(String propertyFile) {
 		try {
-			if (isRunningFromJar()){
-				File f = new File("./"+propertyFile);
-				if (!f.exists()) JarExport.ExportResource("/"+propertyFile);
+			if (isRunningFromJar()) {
+				File f = new File("./" + propertyFile);
+				if (!f.exists())
+					JarExport.ExportResource("/" + propertyFile);
 				load(new FileInputStream(f));
 			} else {
 				load(ClassLoader.getSystemResource(propertyFile).openStream());
@@ -24,13 +25,14 @@ public class Configuration extends Properties{
 			e.printStackTrace();
 		}
 	}
-	
-	public static void checkConfig(Properties c1, Properties c2){				
+
+	public static void checkConfig(Properties c1, Properties c2) {
 	}
-	
+
 	public static boolean isRunningFromJar() {
 		String className = Configuration.class.getName().replace('.', '/');
-		String classJar = Configuration.class.getResource("/" + className + ".class").toString();
+		String classJar = Configuration.class.getResource(
+				"/" + className + ".class").toString();
 		return classJar.startsWith("jar:");
 	}
 }

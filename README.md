@@ -60,7 +60,6 @@
 	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">log4j</span></span></li>
 	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">vlcj</span></span></li>
 	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">slfj4</span></span></li>
-	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">json-simple</span></span></li>
 	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">commons-lang</span></span></li>
 	<li><span style="font-size:11px;"><span style="font-family:verdana,geneva,sans-serif;">logback</span></span></li>
 </ul>

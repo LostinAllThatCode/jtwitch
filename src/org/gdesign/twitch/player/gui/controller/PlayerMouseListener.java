@@ -16,54 +16,68 @@ import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.twitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
 
 public class PlayerMouseListener extends MouseAdapter {
-	
+
 	private MainController controller;
-	
+
 	public PlayerMouseListener(MainController controller) {
 		this.controller = controller;
 	}
-	
+
 	@Override
 	public void mouseClicked(MouseEvent e) {
-		if (e.getComponent().isEnabled()){
-			if (e.getComponent().getClass().equals(ChannelView.class)){
-				ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
-				if (channel.isOnline()){
+		if (e.getComponent().isEnabled()) {
+			if (e.getComponent().getClass().equals(ChannelView.class)) {
+				ChannelModel channel = controller.model.getChannelListModel()
+						.getChannel(e.getComponent().getName());
+				if (channel.isOnline()) {
 					try {
-						LivestreamerInstance i = LivestreamerFactory.startInstance("twitch.tv/"+channel.getName(), LivestreamerFactory.getDefaultQuality());
+						LivestreamerInstance i = LivestreamerFactory
+								.startInstance(
+										"twitch.tv/" + channel.getName(),
+										LivestreamerFactory.getDefaultQuality());
 						i.addListener(controller);
-						((ChannelView)e.getComponent()).setHover(false);
-					} catch (LivestreamerAlreadyRunningException  e1) {
+						((ChannelView) e.getComponent()).setHover(false);
+					} catch (LivestreamerAlreadyRunningException e1) {
 						LogManager.getLogger().error(e1);
-					} 
+					}
 				}
-			} else if (e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
-				switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
-					case PLAY_STOP:
-						if (controller.view.getEmbeddedPlayerView().isPlaying())  controller.model.getEmbeddedPlayerModel().getInstance().stopStream();
-						break;
-					case FULLSCREEN:
-						controller.view.getEmbeddedPlayerView().toggleFullscreen();
-						if (controller.view.getEmbeddedPlayerView().isFullscreen()) controller.view.getChannelListView().setVisible(false);
-						else controller.view.getChannelListView().setVisible(true);
-						break;
-					case VOLUME:
-						controller.view.getEmbeddedPlayerView().setVolume(e.getX());
-						break;
-					case QUALITY:
-						controller.view.getEmbeddedPlayerView().setQuality(LivestreamerFactory.getDefaultQuality());
-						controller.view.getEmbeddedPlayerView().toggleQualityPopup();
-					default:
-						break;
+			} else if (e.getComponent().getClass()
+					.equals(EmbeddedPlayerControlView.class)) {
+				switch (((EmbeddedPlayerControlView) e.getComponent())
+						.getControlType()) {
+				case PLAY_STOP:
+					if (controller.view.getEmbeddedPlayerView().isPlaying())
+						controller.model.getEmbeddedPlayerModel().getInstance()
+								.stopStream();
+					break;
+				case FULLSCREEN:
+					controller.view.getEmbeddedPlayerView().toggleFullscreen();
+					if (controller.view.getEmbeddedPlayerView().isFullscreen())
+						controller.view.getChannelListView().setVisible(false);
+					else
+						controller.view.getChannelListView().setVisible(true);
+					break;
+				case VOLUME:
+					controller.view.getEmbeddedPlayerView().setVolume(e.getX());
+					break;
+				case QUALITY:
+					controller.view.getEmbeddedPlayerView().setQuality(
+							LivestreamerFactory.getDefaultQuality());
+					controller.view.getEmbeddedPlayerView()
+							.toggleQualityPopup();
+				default:
+					break;
 				}
-			} else if (e.getComponent().getClass().equals(JMenuItem.class)){
+			} else if (e.getComponent().getClass().equals(JMenuItem.class)) {
 				String quality = ((JMenuItem) e.getComponent()).getText();
 				LivestreamerFactory.setDefaultQuality(quality.toLowerCase());
-				LivestreamerInstance instance = controller.model.getEmbeddedPlayerModel().getInstance();
+				LivestreamerInstance instance = controller.model
+						.getEmbeddedPlayerModel().getInstance();
 				if (instance != null) {
 					try {
 						LivestreamerFactory.stopInstance(instance);
-						LivestreamerInstance newInstance = LivestreamerFactory.startInstance(instance.getStream(), quality);
+						LivestreamerInstance newInstance = LivestreamerFactory
+								.startInstance(instance.getStream(), quality);
 						newInstance.addListener(controller);
 					} catch (LivestreamerAlreadyRunningException e1) {
 						LogManager.getLogger().error(e1);
@@ -73,69 +87,93 @@ public class PlayerMouseListener extends MouseAdapter {
 			}
 		}
 	}
-	
+
 	@Override
 	public void mouseEntered(MouseEvent e) {
-		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-			ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
+		if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass().equals(ChannelView.class)) {
+			ChannelModel channel = controller.model.getChannelListModel()
+					.getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
 				((ChannelView) e.getComponent()).setHover(true);
 			}
-		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+		} else if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass()
+						.equals(EmbeddedPlayerControlView.class)) {
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
-		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
-			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-			e.getComponent().setBackground(e.getComponent().getBackground().brighter());
+		} else if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass().equals(JMenuItem.class)) {
+			e.getComponent().setCursor(
+					Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			e.getComponent().setBackground(
+					e.getComponent().getBackground().brighter());
 		}
 	}
-	
+
 	@Override
 	public void mouseExited(MouseEvent e) {
-		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(ChannelView.class)){
-			ChannelModel channel = controller.model.getChannelListModel().getChannel(e.getComponent().getName());
+		if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass().equals(ChannelView.class)) {
+			ChannelModel channel = controller.model.getChannelListModel()
+					.getChannel(e.getComponent().getName());
 			if (channel.isOnline()) {
 				((ChannelView) e.getComponent()).setHover(false);
-			}		
-		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+			}
+		} else if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass()
+						.equals(EmbeddedPlayerControlView.class)) {
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(false);
-		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
-			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-			e.getComponent().setBackground(e.getComponent().getBackground().darker());
+		} else if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass().equals(JMenuItem.class)) {
+			e.getComponent().setCursor(
+					Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			e.getComponent().setBackground(
+					e.getComponent().getBackground().darker());
 		}
 	}
-	
+
 	@Override
 	public void mouseMoved(MouseEvent e) {
-		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
-			switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
-				case VOLUME:
-					((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
-					break;
-				default:
-					break;
+		if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass()
+						.equals(EmbeddedPlayerControlView.class)) {
+			switch (((EmbeddedPlayerControlView) e.getComponent())
+					.getControlType()) {
+			case VOLUME:
+				((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
+				break;
+			default:
+				break;
 			}
 		}
-			
+
 	}
-	
+
 	@Override
 	public void mouseDragged(MouseEvent e) {
-		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
-			switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
-				case VOLUME:
-					((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
-					controller.view.getEmbeddedPlayerView().setVolume(e.getX());
-					break;
-				default:
-					break;
+		if (e.getComponent().isEnabled()
+				&& e.getComponent().getClass()
+						.equals(EmbeddedPlayerControlView.class)) {
+			switch (((EmbeddedPlayerControlView) e.getComponent())
+					.getControlType()) {
+			case VOLUME:
+				((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
+				controller.view.getEmbeddedPlayerView().setVolume(e.getX());
+				break;
+			default:
+				break;
 			}
 		}
 	}
-	
+
 	@Override
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getWheelRotation() < 0) controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() + 10); 
-		else controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() - 10);
+		if (e.getWheelRotation() < 0)
+			controller.view.getEmbeddedPlayerView().setVolume(
+					controller.view.getEmbeddedPlayerView().getVolume() + 10);
+		else
+			controller.view.getEmbeddedPlayerView().setVolume(
+					controller.view.getEmbeddedPlayerView().getVolume() - 10);
 	}
-	
+
 }

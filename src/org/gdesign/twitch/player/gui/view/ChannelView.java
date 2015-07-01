@@ -24,20 +24,20 @@ public class ChannelView extends JPanel {
 	 * 
 	 */
 	private static final long serialVersionUID = -3633213310390485830L;
-	
-	private Color bgColorOffline 	= Color.DARK_GRAY.darker();
-	private Color bgColor 			= new Color(80,40,180);
-	private Color fgColor 			= Color.WHITE;
-	
-	private Font defFont			= ResourceManager.getFont("gnuolane.ttf");
-	private Font gameFont			= new Font("Arial", Font.BOLD, 12);
-	private Font viewFont			= new Font("Arial", Font.BOLD, 14);
-	
-	private JLabel name				= new JLabel("");
-	private JLabel game 			= new JLabel("");
-	private JLabel viewers 			= new JLabel("");
-	private JLabel action 			= new JLabel("");
-	
+
+	private Color bgColorOffline = Color.DARK_GRAY.darker();
+	private Color bgColor = new Color(80, 40, 180);
+	private Color fgColor = Color.WHITE;
+
+	private Font defFont = ResourceManager.getFont("gnuolane.ttf");
+	private Font gameFont = new Font("Arial", Font.BOLD, 12);
+	private Font viewFont = new Font("Arial", Font.BOLD, 14);
+
+	private JLabel name = new JLabel("");
+	private JLabel game = new JLabel("");
+	private JLabel viewers = new JLabel("");
+	private JLabel action = new JLabel("");
+
 	public ChannelView(String viewname) {
 		setName(viewname);
 		setEnabled(false);
@@ -47,88 +47,90 @@ public class ChannelView extends JPanel {
 		name.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
 		game.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
 		action.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 8));
-		
+
 		action.setHorizontalAlignment(SwingConstants.RIGHT);
-		
-		name.setFont(defFont.deriveFont(Font.BOLD,20f));
+
+		name.setFont(defFont.deriveFont(Font.BOLD, 20f));
 		game.setFont(gameFont);
 		viewers.setFont(viewFont);
 		action.setFont(gameFont);
 		action.setVisible(false);
-		
+
 		setBackground(bgColorOffline);
-		
-		action.setForeground(new Color(60,30,150));
+
+		action.setForeground(new Color(60, 30, 150));
 		name.setForeground(fgColor);
 		game.setForeground(fgColor);
 		viewers.setForeground(fgColor.brighter());
-		
+
 		GridBagConstraints c = new GridBagConstraints();
-		
-		setMinimumSize(new Dimension(250,30));
-		setPreferredSize(new Dimension(250,30));
-		setMaximumSize(new Dimension(250,30));
-		
+
+		setMinimumSize(new Dimension(250, 30));
+		setPreferredSize(new Dimension(250, 30));
+		setMaximumSize(new Dimension(250, 30));
+
 		c.weightx = .1;
-		
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.gridy = 0;
-		add(viewers,c);
-		
+		add(viewers, c);
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.FIRST_LINE_START;
 		c.gridx = 0;
 		c.gridy = 1;
-		add(name,c);
-		
+		add(name, c);
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.gridx = 0;
 		c.gridy = 2;
 		c.gridwidth = 2;
-		add(game,c);
-		
+		add(game, c);
+
 		c.fill = GridBagConstraints.HORIZONTAL;
 		c.anchor = GridBagConstraints.FIRST_LINE_END;
 		c.gridx = 1;
 		c.gridy = 1;
-		add(action,c);
+		add(action, c);
 	}
-	
-	public void setChannelName(String name){
-		ResourceManager.fixFontSize(this.name,name.toUpperCase());
+
+	public void setChannelName(String name) {
+		ResourceManager.fixFontSize(this.name, name.toUpperCase());
 	}
-	
-	public void setChannelGame(String game){
-		ResourceManager.fixFontSize(this.game,game);
+
+	public void setChannelGame(String game) {
+		ResourceManager.fixFontSize(this.game, game);
 	}
-	
-	public void setChannelViewers(String viewers){
-		ResourceManager.fixFontSize(this.viewers,(viewers.compareTo("0")==0 ? "" : viewers));
+
+	public void setChannelViewers(String viewers) {
+		ResourceManager.fixFontSize(this.viewers,
+				(viewers.compareTo("0") == 0 ? "" : viewers));
 	}
-	
-	public void setChannelAction(String action){
-		ResourceManager.fixFontSize(this.action,action);
+
+	public void setChannelAction(String action) {
+		ResourceManager.fixFontSize(this.action, action);
 	}
-	
-	public void setOnline(boolean online){
+
+	public void setOnline(boolean online) {
 		if (online) {
 			setBackground(bgColor);
-			setMinimumSize(new Dimension(250,70));
-			setPreferredSize(new Dimension(250,70));
-			setMaximumSize(new Dimension(250,70));
-			ResourceManager.fixFontSize(this.viewers,(viewers.getText().length() == 0 ? "0" : viewers.getText()));
+			setMinimumSize(new Dimension(250, 70));
+			setPreferredSize(new Dimension(250, 70));
+			setMaximumSize(new Dimension(250, 70));
+			ResourceManager.fixFontSize(this.viewers, (viewers.getText()
+					.length() == 0 ? "0" : viewers.getText()));
 		} else {
 			setBackground(bgColorOffline);
-			setMinimumSize(new Dimension(250,30));
-			setPreferredSize(new Dimension(250,30));
-			setMaximumSize(new Dimension(250,30));
+			setMinimumSize(new Dimension(250, 30));
+			setPreferredSize(new Dimension(250, 30));
+			setMaximumSize(new Dimension(250, 30));
 		}
 	}
-	
-	public void setHover(boolean hover){
-		if (hover){
+
+	public void setHover(boolean hover) {
+		if (hover) {
 			setBackground(Color.WHITE);
 			name.setForeground(bgColor);
 			game.setForeground(bgColor);
@@ -140,7 +142,7 @@ public class ChannelView extends JPanel {
 			name.setForeground(Color.WHITE);
 			game.setForeground(Color.WHITE);
 			viewers.setForeground(Color.WHITE);
-			action.setForeground(Color.WHITE);		
+			action.setForeground(Color.WHITE);
 			setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 		}
 	}
@@ -149,15 +151,22 @@ public class ChannelView extends JPanel {
 	protected void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		Graphics2D g2d = (Graphics2D) g;
-		g2d.setFont(new Font("Arial",Font.PLAIN,10));
-		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		if (this.action.getText().length() != 0 && getBackground() != Color.WHITE){
-			GradientPaint redtowhite = new GradientPaint(0, 20,bgColor.brighter(), this.getWidth(), 20, getBackground());
+		g2d.setFont(new Font("Arial", Font.PLAIN, 10));
+		g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+				RenderingHints.VALUE_ANTIALIAS_ON);
+		if (this.action.getText().length() != 0
+				&& getBackground() != Color.WHITE) {
+			GradientPaint redtowhite = new GradientPaint(0, 20,
+					bgColor.brighter(), this.getWidth(), 20, getBackground());
 			g2d.setPaint(redtowhite);
 			g2d.fillRect(0, 0, this.getWidth(), 70);
 		}
-		if (this.game.getText().length() != 0) g2d.setColor(new Color(90,50,210).darker()); else g2d.setColor(Color.DARK_GRAY);
-		g2d.drawLine(0,this.getHeight()-1,this.getWidth(),this.getHeight()-1);
+		if (this.game.getText().length() != 0)
+			g2d.setColor(new Color(90, 50, 210).darker());
+		else
+			g2d.setColor(Color.DARK_GRAY);
+		g2d.drawLine(0, this.getHeight() - 1, this.getWidth(),
+				this.getHeight() - 1);
 	}
-	
+
 }

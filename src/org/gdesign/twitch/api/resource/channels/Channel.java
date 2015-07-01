@@ -7,7 +7,7 @@ import org.gdesign.twitch.api.resource.TwitchAPIResource;
 import org.gdesign.twitch.api.resource.root.Links;
 
 public class Channel extends TwitchAPIResource {
-	
+
 	public boolean mature;
 	public String status;
 	public String broadcaster_language;

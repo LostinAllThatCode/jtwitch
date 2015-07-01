@@ -13,17 +13,18 @@ public class PlayerHotkeyListener implements HotKeyListener {
 
 	private MainController controller;
 	private Provider provider;
-	
+
 	public PlayerHotkeyListener(MainController controller) {
 		this.controller = controller;
-		this.provider	= Provider.getCurrentProvider(false);
+		this.provider = Provider.getCurrentProvider(false);
 		Provider.logger.setLevel(Level.OFF);
 	}
-	
-	public void register(KeyStroke s){
+
+	public void register(KeyStroke s) {
 		provider.register(s, this);
 	}
-	
+
+	@Override
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:
@@ -43,15 +44,17 @@ public class PlayerHotkeyListener implements HotKeyListener {
 			break;
 		case KeyEvent.VK_SUBTRACT:
 		case KeyEvent.VK_MINUS:
-			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume()-10);
+			controller.view.getEmbeddedPlayerView().setVolume(
+					controller.view.getEmbeddedPlayerView().getVolume() - 10);
 			break;
 		case KeyEvent.VK_ADD:
 		case KeyEvent.VK_PLUS:
-			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume()+10);
+			controller.view.getEmbeddedPlayerView().setVolume(
+					controller.view.getEmbeddedPlayerView().getVolume() + 10);
 			break;
 		default:
 			break;
 		}
-		
+
 	}
 }
