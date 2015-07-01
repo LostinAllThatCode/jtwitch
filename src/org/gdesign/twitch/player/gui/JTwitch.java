@@ -54,18 +54,8 @@ public class JTwitch{
 		MainView mainView 	= new MainView(frame);
 		MainModel mainModel	= new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
-	
-		try {
-			LogManager.getLogger().debug(new TwitchAPI().authorized());
-			LogManager.getLogger().debug(new TwitchAPI().getResource("https://api.twitch.tv/kraken/channel", MyChannel.class).stream_key);
-		} catch (JsonSyntaxException | TwitchAPIUnauthorizedAccessException
-				| IOException e) {
-			e.printStackTrace();
-		}
-		
-		controller.update(15000);
-		
-		
+
+		controller.update(15000);		
 	}
 	
 	public static boolean checkDependencies(){
