@@ -1,5 +1,4 @@
-<html>
-<body>
+<html><body>
 <p style="font-weight: normal; line-height: 1.2; color: rgb(51, 51, 51); font-family: sans-serif, Arial, Verdana, 'Trebuchet MS';"><span style="font-size:20px;"><span style="font-family:verdana,geneva,sans-serif;">&nbsp;<strong>jTwitchPlayer</strong>&nbsp;</span></span></p>
 
 <p style="color: rgb(51, 51, 51); font-family: sans-serif, Arial, Verdana, 'Trebuchet MS'; font-size: 13px; line-height: 20.7999992370605px;"><em><span style="font-family:verdana,geneva,sans-serif;"><strong><span style="font-size:12px;">Requirements:</span></strong></span></em></p>
