@@ -6,6 +6,10 @@ public class EmbeddedPlayerModel{
 
 	private LivestreamerInstance instance;	
 	
+	public void setInstance(LivestreamerInstance live){
+		this.instance = live;
+	}
+	
 	public LivestreamerInstance getInstance(){
 		return instance;
 	}

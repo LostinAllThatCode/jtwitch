@@ -42,9 +42,11 @@ public class PlayerHotkeyListener implements HotKeyListener {
 			}
 			break;
 		case KeyEvent.VK_SUBTRACT:
+		case KeyEvent.VK_MINUS:
 			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume()-10);
 			break;
 		case KeyEvent.VK_ADD:
+		case KeyEvent.VK_PLUS:
 			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume()+10);
 			break;
 		default:

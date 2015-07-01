@@ -8,6 +8,7 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -183,20 +184,22 @@ public class EmbeddedPlayerView extends JPanel{
 		Point p = getControl("QUALITY").getLocationOnScreen();
 		p.translate(-21, -85);
 		popupQuali.setLocation(p);
-		popupQuali.setVisible(!popupQuali.isVisible());
+		popupQuali.setVisible(!popupQuali.isVisible());		
 	}
 	
 	public void setQuality(String quality){
 		for (Component c : popupQuali.getComponents()){
 			JMenuItem i = (JMenuItem) c;
-			if (i.getText().compareTo(quality) == 0) i.setFont(i.getFont().deriveFont(Font.BOLD)); else i.setFont(i.getFont().deriveFont(Font.PLAIN));
+			if (i.getText().compareTo(quality.toUpperCase()) == 0) i.setBackground(Color.DARK_GRAY.darker().darker()); else i.setBackground(Color.DARK_GRAY);
 		}
 	}
 	
 	
 	@Override
 	public synchronized void addMouseListener(MouseListener l) {
-		for (Component c : controls.getComponents()) c.addMouseListener(l);
+		for (Component c : controls.getComponents()) {
+			c.addMouseListener(l); c.addMouseMotionListener((MouseMotionListener) l);
+		}
 		for (Component d : popupQuali.getComponents()) d.addMouseListener(l);
 	}
 	

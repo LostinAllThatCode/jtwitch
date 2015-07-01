@@ -1,14 +1,19 @@
 package org.gdesign.twitch.player.gui;
 
+import java.io.IOException;
+
 import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.TwitchAPI;
+import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
+import org.gdesign.twitch.api.resource.channels.MyChannel;
 import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.MainView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
-import org.json.simple.parser.ParseException;
+
+import com.google.gson.JsonSyntaxException;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
@@ -24,12 +29,7 @@ public class JTwitch{
         if (checkDependencies()) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                	try {
-						new JTwitch();
-					} catch (ParseException e) {
-						LogManager.getLogger().error(e);
-						e.printStackTrace();
-					}
+					new JTwitch();
                 }
             });
         } else {
@@ -41,8 +41,10 @@ public class JTwitch{
         }
 	}
 	
-	public JTwitch() throws ParseException {
-		JFrame frame = new JFrame("JTwitch Player "+getClass().getPackage().getImplementationVersion());
+	public JTwitch() {
+		String version = getClass().getPackage().getImplementationVersion();
+		if (version == null) version = "[experimental]";
+		JFrame frame = new JFrame("JTwitch Player "+version);
 		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("jtwitchplayer.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setBounds(0, 0, 1280, 640);
@@ -53,9 +55,17 @@ public class JTwitch{
 		MainModel mainModel	= new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
 	
-		LogManager.getLogger().debug(new TwitchAPI().authorized());
+		try {
+			LogManager.getLogger().debug(new TwitchAPI().authorized());
+			LogManager.getLogger().debug(new TwitchAPI().getResource("https://api.twitch.tv/kraken/channel", MyChannel.class).stream_key);
+		} catch (JsonSyntaxException | TwitchAPIUnauthorizedAccessException
+				| IOException e) {
+			e.printStackTrace();
+		}
 		
 		controller.update(15000);
+		
+		
 	}
 	
 	public static boolean checkDependencies(){

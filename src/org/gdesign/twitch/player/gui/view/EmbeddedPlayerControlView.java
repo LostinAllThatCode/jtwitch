@@ -6,10 +6,13 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.MouseInfo;
 import java.awt.Polygon;
 import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
+
+import org.apache.logging.log4j.LogManager;
 
 public class EmbeddedPlayerControlView extends JPanel {
 	private static final long serialVersionUID = -6544459734640671955L;
@@ -21,6 +24,9 @@ public class EmbeddedPlayerControlView extends JPanel {
 	private boolean hover;
 	private boolean active;
 	private Object value;
+	private boolean valueChanged=false;
+	private Color dynColor = Color.WHITE;
+	private Thread thread = null;
 	
 	public EmbeddedPlayerControlView(Control c, boolean active) {
 		setDoubleBuffered(true);
@@ -42,6 +48,7 @@ public class EmbeddedPlayerControlView extends JPanel {
 	
 	public void setActive(boolean running){
 		this.active = running;
+		repaint();
 	}
 	
 	public Control getControlType(){
@@ -111,9 +118,23 @@ public class EmbeddedPlayerControlView extends JPanel {
 				g2d.fillPolygon(arrow3); g.fillPolygon(arrow4);
 				break;
 			case VOLUME:
+				Polygon speaker = new Polygon();
+				speaker.addPoint(3, 8); speaker.addPoint(3, 12); speaker.addPoint(6, 12);
+				speaker.addPoint(12, 15); speaker.addPoint(12, 3); speaker.addPoint(6, 8);
 				g2d.drawRect(0, 1, this.getWidth()-1, this.getHeight()-3);
-				if (hover && active) g2d.setColor(Color.WHITE.darker()); 
 				g2d.fillRect(1, 2, Integer.valueOf(this.value.toString())-3, this.getHeight()-4);
+				if (valueChanged) {
+					g.setColor(dynColor);
+					g.drawString(value.toString(), 16, this.getHeight()-6);
+					speaker.translate(0, 1);
+					g.fillPolygon(speaker);
+				}
+				if (hover && active) {
+					int mX = MouseInfo.getPointerInfo().getLocation().x;
+					g2d.setColor(Color.WHITE.darker());
+					g2d.drawLine(mX - this.getLocationOnScreen().x, 2,mX - this.getLocationOnScreen().x, 18);
+					g2d.setColor(Color.DARK_GRAY.darker());
+				}
 				break;
 			case STATUS:
 				g2d.fillRect(1, 1, this.getWidth()-2, this.getHeight()-2);
@@ -122,10 +143,9 @@ public class EmbeddedPlayerControlView extends JPanel {
 				break;
 			case QUALITY:
 				if (hover && active) g2d.setColor(Color.WHITE.darker()); 
-				g2d.fillOval(2, 2, this.getWidth()-4, this.getHeight()-4);
+				g2d.fillOval(this.getWidth()-18, 2, 16, 16);
 				g2d.setColor(Color.DARK_GRAY);
-				g2d.fillOval(7, 7, this.getWidth()-14, this.getHeight()-14);
-				
+				g2d.fillOval(this.getWidth()-13, 7, 6, 6);
 				break;
 			default:
 				break;
@@ -139,6 +159,34 @@ public class EmbeddedPlayerControlView extends JPanel {
 
 	public void setValue(Object value) {
 		this.value = value;
+		this.valueChanged = true;
+		this.dynColor = new Color(1f,1f,1f,1f);
+		if (thread == null) {
+			thread = new Thread(new Runnable() {
+				long time = 2000;
+				long step = 10;
+				
+				@Override
+				public void run() {
+					try {
+						int oldAlpha = 255;
+						while (dynColor.getAlpha() >= 1) {
+							if (dynColor.getAlpha() > oldAlpha) time=2000;
+							dynColor = new Color(1f,1f,1f,(float) time/2000);
+							oldAlpha = dynColor.getAlpha();
+							time-=step;
+							repaint();
+							Thread.sleep(step);
+						}
+					} catch (InterruptedException e) {
+						LogManager.getLogger().trace(e);
+					}
+					valueChanged=false;
+					thread = null;
+				}
+			});
+			thread.start();
+		}
 		repaint();
 	}
 	

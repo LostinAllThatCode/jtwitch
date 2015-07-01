@@ -51,6 +51,7 @@ public class PlayerMouseListener extends MouseAdapter {
 						controller.view.getEmbeddedPlayerView().setVolume(e.getX());
 						break;
 					case QUALITY:
+						controller.view.getEmbeddedPlayerView().setQuality(LivestreamerFactory.getDefaultQuality());
 						controller.view.getEmbeddedPlayerView().toggleQualityPopup();
 					default:
 						break;
@@ -84,6 +85,7 @@ public class PlayerMouseListener extends MouseAdapter {
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
 		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
 			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+			e.getComponent().setBackground(e.getComponent().getBackground().brighter());
 		}
 	}
 	
@@ -98,6 +100,35 @@ public class PlayerMouseListener extends MouseAdapter {
 			((EmbeddedPlayerControlView) e.getComponent()).setHover(false);
 		} else if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(JMenuItem.class)){
 			e.getComponent().setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			e.getComponent().setBackground(e.getComponent().getBackground().darker());
+		}
+	}
+	
+	@Override
+	public void mouseMoved(MouseEvent e) {
+		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+			switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
+				case VOLUME:
+					((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
+					break;
+				default:
+					break;
+			}
+		}
+			
+	}
+	
+	@Override
+	public void mouseDragged(MouseEvent e) {
+		if (e.getComponent().isEnabled() && e.getComponent().getClass().equals(EmbeddedPlayerControlView.class)){
+			switch (((EmbeddedPlayerControlView) e.getComponent()).getControlType()) {
+				case VOLUME:
+					((EmbeddedPlayerControlView) e.getComponent()).setHover(true);
+					controller.view.getEmbeddedPlayerView().setVolume(e.getX());
+					break;
+				default:
+					break;
+			}
 		}
 	}
 	

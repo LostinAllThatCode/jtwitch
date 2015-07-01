@@ -1,6 +1,8 @@
-package org.gdesign.twitch.api.resource;
+package org.gdesign.twitch.api.resource.root;
 
 import java.net.URL;
+
+import org.gdesign.twitch.api.resource.TwitchAPIResource;
 
 public class Links extends TwitchAPIResource{
 	public URL self;

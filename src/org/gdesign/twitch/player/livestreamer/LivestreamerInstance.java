@@ -49,7 +49,7 @@ public class LivestreamerInstance extends Thread implements Runnable{
 	        while(( (ch = reader.read()) != -1) && !isInterrupted()){
 	        	line += (char) ch;
 	        	if (line.startsWith("[cli]") && line.endsWith("\n")){
-	        		String output = line.substring(5, line.length()-2);
+	        		String output = line.substring(5, line.indexOf('\n'));
 	        		LogManager.getLogger().trace(output);	
 	        		if (output.contains(this.localhost+":"+port)) for (LivestreamerListener l : listener) l.streamStarted(this);
 	        		if (output.contains("HTTP connection closed") || output.contains("Stream ended")) {
@@ -61,7 +61,7 @@ public class LivestreamerInstance extends Thread implements Runnable{
 	        reader.close();   
 			LogManager.getLogger().debug("Stopped "+stream+" on http://127.0.0.1:"+port);
 		} catch (Exception e) {
-			LogManager.getLogger().error(">"+e);
+			LogManager.getLogger().warn("Stream ended. Connection issues or "+getChannel()+" stopped streaming.");
 		}
 		for (LivestreamerListener l : listener) l.streamEnded(this);
 	}

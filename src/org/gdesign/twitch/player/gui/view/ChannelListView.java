@@ -61,6 +61,7 @@ public class ChannelListView extends JScrollPane{
 				if (c.getClass().equals(ChannelView.class) && c.getName().compareTo(m.getName()) == 0) channelList.add(c);
 			}
 		}
+		channelList.validate();
 	}
 
 	@Override

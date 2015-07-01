@@ -46,7 +46,6 @@ public class LivestreamerFactory {
 		instance = new LivestreamerInstance(cmd);
 		instance.setStream(stream);
 		instance.setChannel(stream.substring(10, stream.length()));
-		LogManager.getLogger().debug(instance.getChannel());
 		instance.setPort(randomPort);
 		instance.setQuality(quality);
 		instance.start();
