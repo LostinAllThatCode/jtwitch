@@ -1,19 +1,12 @@
 package org.gdesign.twitch.player.gui;
 
-import java.io.IOException;
-
 import javax.swing.*;
 
 import org.apache.logging.log4j.LogManager;
-import org.gdesign.twitch.api.TwitchAPI;
-import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
-import org.gdesign.twitch.api.resource.channels.MyChannel;
 import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.MainView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
-
-import com.google.gson.JsonSyntaxException;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
