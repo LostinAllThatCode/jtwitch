@@ -27,22 +27,16 @@ public class LivestreamerFactory {
 		quality = config.getProperty("livestreamer-quality");
 	}
 
-	public static LivestreamerInstance startInstance(String... args)
-			throws LivestreamerAlreadyRunningException {
+	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException {
 		final String stream = args[0];
 		final String quality = args[1];
-		final int randomPort = generateRandomPort(Integer.valueOf(config
-				.getProperty("livestreamer-http-port")), Integer.valueOf(config
-				.getProperty("livestreamer-http-port-range")));
+		final int randomPort = generateRandomPort(Integer.valueOf(config.getProperty("livestreamer-http-port")), 
+				Integer.valueOf(config.getProperty("livestreamer-http-port-range")));
 
-		final String[] cmd = (String[]) ArrayUtils.addAll(
-				runtimeExecutable(randomPort), args);
+		final String[] cmd = (String[]) ArrayUtils.addAll(runtimeExecutable(randomPort), args);
 
 		if (isRunning(stream)) {
-			LogManager.getLogger().error(
-					"There is an existing instance for " + stream
-							+ " with threadID: " + instance.getId());
-			throw new LivestreamerAlreadyRunningException();
+			throw new LivestreamerAlreadyRunningException("There is an existing instance for " + stream + " with threadID: " + instance.getId());
 		} else {
 			if (instance != null)
 				instance.stopStream();
@@ -63,8 +57,7 @@ public class LivestreamerFactory {
 
 	private static String[] runtimeExecutable(int port) {
 		String[] path = { LIVESTREAMER_PATH + "livestreamer" };
-		String[] args = (config.getProperty("livestreamer-args") + " " + String
-				.valueOf(port)).split(" ");
+		String[] args = (config.getProperty("livestreamer-args") + " " + String.valueOf(port)).split(" ");
 		return (String[]) ArrayUtils.addAll(path, args);
 	}
 
@@ -72,8 +65,7 @@ public class LivestreamerFactory {
 		if (instance == null)
 			return false;
 		else {
-			return (instance.getStream().compareTo(stream) == 0 && instance
-					.isAlive());
+			return (instance.getStream().compareTo(stream) == 0 && instance.isAlive());
 		}
 	}
 
@@ -90,10 +82,8 @@ public class LivestreamerFactory {
 		return quality;
 	}
 
-	private static boolean checkLivestreamer(String cmd) throws IOException,
-			InterruptedException {
-		ProcessBuilder pb = new ProcessBuilder(cmd + "livestreamer",
-				"--version-check");
+	private static boolean checkLivestreamer(String cmd) throws IOException, InterruptedException {
+		ProcessBuilder pb = new ProcessBuilder(cmd + "livestreamer","--version-check");
 		Process process = pb.start();
 		if (process.waitFor() == 0)
 			return true;
@@ -105,8 +95,7 @@ public class LivestreamerFactory {
 		boolean found = false;
 		try {
 			if (checkLivestreamer("")) {
-				LogManager.getLogger().debug(
-						"Livestreamer is nativly installed.");
+				LogManager.getLogger().debug("Livestreamer is nativly installed.");
 				LIVESTREAMER_PATH = "";
 				found = true;
 			}
@@ -114,28 +103,22 @@ public class LivestreamerFactory {
 			String configPath = config.getProperty("livestreamer");
 			try {
 				if (checkLivestreamer(configPath)) {
-					LogManager.getLogger().debug(
-							"Livestreamer location: " + configPath);
+					LogManager.getLogger().debug("Livestreamer location: " + configPath);
 					LIVESTREAMER_PATH = configPath;
 					found = true;
 				}
 			} catch (Exception e1) {
 				if (SystemInfo.getOS().equals(OperatingSystem.WIN)) {
-					File file = new File(
-							"C:/Program Files (x86)/livestreamer/livestreamer.exe");
+					File file = new File("C:/Program Files (x86)/livestreamer/livestreamer.exe");
 					if (file.exists()) {
-						LogManager
-								.getLogger()
-								.debug("[WIN] Livestreamer location: C:/Program Files (x86)/livestreamer/");
+						LogManager.getLogger().debug("[WIN] Livestreamer location: C:/Program Files (x86)/livestreamer/");
 						LIVESTREAMER_PATH = "C:/Program Files (x86)/livestreamer/";
 						found = true;
 					}
 				} else if (SystemInfo.getOS().equals(OperatingSystem.UNIX)) {
 					File file = new File("/usr/local/bin/livestreamer");
 					if (file.exists()) {
-						LogManager
-								.getLogger()
-								.debug("[UNIX] Livestreamer location: /usr/local/bin/");
+						LogManager.getLogger().debug("[UNIX] Livestreamer location: /usr/local/bin/");
 						LIVESTREAMER_PATH = "/usr/local/bin/";
 						found = true;
 					}
@@ -143,12 +126,8 @@ public class LivestreamerFactory {
 			}
 		}
 		if (!found) {
-			LogManager
-					.getLogger()
-					.debug("Livestreamer is not installed or can't be found on this system.");
-			LogManager
-					.getLogger()
-					.debug("Please set 'livestreamer=' variable in 'livestreamer.properties' to your livestreamer installation path.");
+			LogManager.getLogger().debug("Livestreamer is not installed or can't be found on this system.");
+			LogManager.getLogger().debug("Please set 'livestreamer=' variable in 'livestreamer.properties' to your livestreamer installation path.");
 		}
 		return found;
 	}

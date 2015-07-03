@@ -31,26 +31,27 @@ public class PlayerHotkeyListener implements HotKeyListener {
 			if (controller.view.getEmbeddedPlayerView().isFullscreen()) {
 				controller.view.getEmbeddedPlayerView().toggleFullscreen();
 				controller.view.getChannelListView().setVisible(true);
+				controller.view.getChannelListView().getMenuBar().setVisible(true);
 			}
 			break;
 		case KeyEvent.VK_ENTER:
 			if (!controller.view.getEmbeddedPlayerView().isFullscreen()) {
 				controller.view.getEmbeddedPlayerView().toggleFullscreen();
 				controller.view.getChannelListView().setVisible(false);
+				controller.view.getChannelListView().getMenuBar().setVisible(false);
 			} else {
 				controller.view.getEmbeddedPlayerView().toggleFullscreen();
 				controller.view.getChannelListView().setVisible(true);
+				controller.view.getChannelListView().getMenuBar().setVisible(true);
 			}
 			break;
 		case KeyEvent.VK_SUBTRACT:
 		case KeyEvent.VK_MINUS:
-			controller.view.getEmbeddedPlayerView().setVolume(
-					controller.view.getEmbeddedPlayerView().getVolume() - 10);
+			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() - 10);
 			break;
 		case KeyEvent.VK_ADD:
 		case KeyEvent.VK_PLUS:
-			controller.view.getEmbeddedPlayerView().setVolume(
-					controller.view.getEmbeddedPlayerView().getVolume() + 10);
+			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() + 10);
 			break;
 		default:
 			break;

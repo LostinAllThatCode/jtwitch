@@ -66,16 +66,11 @@ public class EmbeddedPlayerView extends JPanel {
 
 		GridBagConstraints c = new GridBagConstraints();
 
-		EmbeddedPlayerControlView playstop = new EmbeddedPlayerControlView(
-				Control.PLAY_STOP);
-		EmbeddedPlayerControlView fullscreen = new EmbeddedPlayerControlView(
-				Control.FULLSCREEN, true);
-		EmbeddedPlayerControlView vol = new EmbeddedPlayerControlView(
-				Control.VOLUME, true);
-		EmbeddedPlayerControlView status = new EmbeddedPlayerControlView(
-				Control.STATUS);
-		EmbeddedPlayerControlView quality = new EmbeddedPlayerControlView(
-				Control.QUALITY, true);
+		EmbeddedPlayerControlView playstop = new EmbeddedPlayerControlView(Control.PLAY_STOP);
+		EmbeddedPlayerControlView fullscreen = new EmbeddedPlayerControlView(Control.FULLSCREEN, true);
+		EmbeddedPlayerControlView vol = new EmbeddedPlayerControlView(Control.VOLUME, true);
+		EmbeddedPlayerControlView status = new EmbeddedPlayerControlView(Control.STATUS);
+		EmbeddedPlayerControlView quality = new EmbeddedPlayerControlView(Control.QUALITY, true);
 
 		popupQuali = new JPopupMenu();
 		popupQuali.setLayout(new BoxLayout(popupQuali, BoxLayout.Y_AXIS));
@@ -176,8 +171,7 @@ public class EmbeddedPlayerView extends JPanel {
 
 	public void setVolume(int value) {
 		setControlValue("VOLUME", (value <= maxVolume + 10 ? value : maxVolume));
-		embeddedPlayer.getMediaPlayer().setVolume(
-				defVolume = (value <= maxVolume + 10 ? value : maxVolume));
+		embeddedPlayer.getMediaPlayer().setVolume(defVolume = (value <= maxVolume + 10 ? value : maxVolume));
 	}
 
 	public int getVolume() {

@@ -1,9 +1,12 @@
 package org.gdesign.twitch.player.gui.model;
 
+import java.net.URL;
+
 public class ChannelModel implements Comparable<ChannelModel> {
 
 	private boolean online;
 	private String displayName, name, game, action;
+	private URL iconUrl;
 	private int viewers;
 
 	public ChannelModel(String channelName) {
@@ -37,24 +40,38 @@ public class ChannelModel implements Comparable<ChannelModel> {
 		return this.action;
 	}
 
-	public void setOnline(boolean online) {
+	public ChannelModel setOnline(boolean online) {
 		this.online = online;
+		return this;
 	}
 
-	public void setDisplayname(String displayName) {
+	public ChannelModel setDisplayname(String displayName) {
 		this.displayName = displayName;
+		return this;
 	}
 
-	public void setGame(String game) {
+	public ChannelModel setGame(String game) {
 		this.game = game;
+		return this;
 	}
 
-	public void setViewers(int viewers) {
+	public ChannelModel setViewers(int viewers) {
 		this.viewers = viewers;
+		return this;
 	}
 
-	public void setAction(String action) {
+	public ChannelModel setAction(String action) {
 		this.action = action;
+		return this;
+	}
+	
+	public URL getIconUrl() {
+		return iconUrl;
+	}
+
+	public ChannelModel setIconUrl(URL iconUrl) {
+		this.iconUrl = iconUrl;
+		return this;
 	}
 
 	@Override

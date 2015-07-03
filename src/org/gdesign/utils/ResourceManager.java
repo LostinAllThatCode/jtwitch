@@ -1,5 +1,6 @@
 package org.gdesign.utils;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
@@ -58,9 +59,16 @@ public class ResourceManager {
 
 		// Pick a new font size so it will not be larger than the height of
 		// label.
-		int fontSizeToUse = Math.min(newFontSize, componentHeight);
+		float fontSizeToUse = Math.min(newFontSize, componentHeight);
 
 		// Set the label's font size to the newly determined size.
+		label.setFont(label.getFont().deriveFont((int)fontSizeToUse));
 		label.setFont(label.getFont().deriveFont(fontSizeToUse));
+	}
+	
+	public static Color changeAlpha(Color c, float alpha){
+		float r,g,b;
+		r = c.getRed()/255; g = c.getGreen()/255; b = c.getBlue()/255;
+		return new Color(r,g,b,alpha);
 	}
 }

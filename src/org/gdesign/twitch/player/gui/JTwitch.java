@@ -48,7 +48,7 @@ public class JTwitch {
 		JFrame frame = new JFrame("JTwitch Player " + version);
 		frame.setIconImage(new ImageIcon(ClassLoader.getSystemResource("jtwitchplayer.png")).getImage());
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setBounds(0, 0, 1280, 640);
+		frame.setBounds(0, 0, 1280, 650);
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 
@@ -56,7 +56,7 @@ public class JTwitch {
 		MainModel mainModel = new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
 
-		controller.update(15000);
+		controller.update(15000);		
 	}
 
 	public static boolean checkDependencies() {

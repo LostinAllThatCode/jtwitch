@@ -6,9 +6,12 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
 
+import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
+import org.gdesign.twitch.api.resource.builder.DefaultResourceBuilder;
 import org.gdesign.twitch.api.resource.channels.Channel;
 import org.gdesign.twitch.api.resource.channels.MyChannel;
+import org.gdesign.twitch.api.resource.streams.StreamInfo;
 import org.junit.Test;
 
 import com.google.gson.JsonSyntaxException;
@@ -43,4 +46,10 @@ public class TwitchAPITests {
 		assertNotSame("its1z0", channel.name);
 	}
 
+	@Test
+	public void debugging() throws IOException, TwitchAPIUnauthorizedAccessException{
+		
+		LogManager.getLogger().debug(DefaultResourceBuilder.buildResource("https://api.twitch.tv/kraken/streams/rocketbeanstv","",StreamInfo.class).stream.channel.logo);
+		
+	}
 }

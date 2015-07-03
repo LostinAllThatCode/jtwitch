@@ -10,9 +10,9 @@ import java.util.List;
 
 import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
 import org.gdesign.twitch.api.resource.TwitchAPIResource;
+import org.gdesign.twitch.api.resource.builder.DefaultResourceBuilder;
 import org.gdesign.twitch.api.resource.root.Root;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 
 public class TwitchAPI {
@@ -87,7 +87,7 @@ public class TwitchAPI {
 	 * @throws JsonSyntaxException
 	 */
 	public <T extends TwitchAPIResource> T getResource(String url, Class<T> clazz) throws TwitchAPIUnauthorizedAccessException, IOException {
-		return new Gson().fromJson(request(url, this.oAuthToken), clazz);
+		return DefaultResourceBuilder.buildResource(url, this.oAuthToken, clazz);
 	}
 
 	/**
@@ -101,29 +101,24 @@ public class TwitchAPI {
 	 * @throws TwitchAPIUnauthorizedAccessException
 	 * @throws IOException
 	 */
-	private String request(String urlString, String token) throws TwitchAPIUnauthorizedAccessException, IOException {
+	public static String request(String urlString, String token) throws TwitchAPIUnauthorizedAccessException, IOException {
 		URLConnection connection = null;
 		try {
 			connection = new URL(urlString).openConnection();
 
-			connection.setRequestProperty("Accept",
-					"application/vnd.twitchtv.v3+json");
+			connection.setRequestProperty("Accept","application/vnd.twitchtv.v3+json");
 			connection.setRequestProperty("Authorization", "OAuth " + token);
 			connection.connect();
 
-			BufferedReader reader = new BufferedReader(new InputStreamReader(
-					connection.getInputStream()));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 
 			return reader.readLine();
 
 		} catch (IOException e) {
 			if (((HttpURLConnection) connection).getResponseCode() == 401)
-				throw new TwitchAPIUnauthorizedAccessException(
-						"Unauthorized access to " + urlString
-								+ ". Wrong token or no permission.\n" + e);
+				throw new TwitchAPIUnauthorizedAccessException("Unauthorized access to " + urlString + ". Wrong token or no permission.\n" + e);
 			else
-				throw new IOException("Input/Output error for url: "
-						+ urlString + "\n" + e);
+				throw new IOException("Input/Output error for url: " + urlString + "\n" + e);
 		}
 	}
 
@@ -158,10 +153,8 @@ public class TwitchAPI {
 	 */
 	public boolean authorized() throws TwitchAPIUnauthorizedAccessException, IOException {
 		Root root = getResource(TwitchAPIRoot, Root.class);
-		if (root != null)
-			return root.token.valid;
-		else
-			return false;
+		if (root != null) return root.token.valid;
+		else return false;
 	}
 
 	/**

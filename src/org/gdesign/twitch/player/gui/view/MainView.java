@@ -1,6 +1,7 @@
 package org.gdesign.twitch.player.gui.view;
 
 import java.awt.BorderLayout;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 
@@ -16,7 +17,6 @@ public class MainView extends JPanel {
 
 	public MainView(JFrame frame) {
 		setLayout(new BorderLayout());
-
 		channelListview = new ChannelListView();
 		playerView = new EmbeddedPlayerView(frame);
 
@@ -34,6 +34,7 @@ public class MainView extends JPanel {
 		return playerView;
 	}
 
+	
 	@Override
 	public synchronized void addKeyListener(KeyListener l) {
 		super.addKeyListener(l);
@@ -46,6 +47,10 @@ public class MainView extends JPanel {
 		super.addMouseListener(l);
 		channelListview.addMouseListener(l);
 		playerView.addMouseListener(l);
+	}
+	
+	public void addActionListener(ActionListener l){
+		channelListview.addActionListener(l);
 	}
 
 }

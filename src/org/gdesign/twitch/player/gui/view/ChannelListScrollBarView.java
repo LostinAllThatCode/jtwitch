@@ -1,6 +1,5 @@
 package org.gdesign.twitch.player.gui.view;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Rectangle;
@@ -13,13 +12,13 @@ public class ChannelListScrollBarView extends BasicScrollBarUI {
 
 	@Override
 	protected void paintTrack(Graphics g, JComponent c, Rectangle trackBounds) {
-		g.setColor(Color.DARK_GRAY);
+		g.setColor(c.getBackground().darker());
 		g.fillRect(0, 0, trackBounds.width, trackBounds.height);
 	}
 
 	@Override
 	protected void paintThumb(Graphics g, JComponent c, Rectangle thumbBounds) {
-		g.setColor(Color.DARK_GRAY.brighter());
+		g.setColor(c.getBackground());
 		g.translate(thumbBounds.x, thumbBounds.y);
 		g.fillRect(0, 0, thumbBounds.width, thumbBounds.height);
 		g.translate(-thumbBounds.x, -thumbBounds.y);

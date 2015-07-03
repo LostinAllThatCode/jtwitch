@@ -1,0 +1,12 @@
+{
+	"version" 					: "0.2.4",
+	"show_offline_streams"		: false,
+	"width"			 			: 250,
+	"height"					: -1,
+	"background"				: "0x2C2C2C",
+	"vert_scrollbar_width"		: 5,
+	"vert_scrollbar_color"		: "0x2C2C2C",
+	"hori_scrollbar_height"		: 0,
+	"hori_scrollbar_color"		: "0x2C2C2C",
+	"scrollbar_unit_increment" 	: 10
+}
