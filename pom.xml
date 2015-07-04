@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.2.5.nightly</version>
+  <version>0.2.6</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
