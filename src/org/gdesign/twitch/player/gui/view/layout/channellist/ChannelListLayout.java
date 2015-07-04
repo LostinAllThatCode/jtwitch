@@ -1,7 +1,8 @@
 package org.gdesign.twitch.player.gui.view.layout.channellist;
 
-public class ChannelListLayout {
-	public String version;
+import org.gdesign.utils.GsonDataSet;
+
+public class ChannelListLayout extends GsonDataSet{
 	public boolean show_offline_streams;
 	public int width;
 	public int height;

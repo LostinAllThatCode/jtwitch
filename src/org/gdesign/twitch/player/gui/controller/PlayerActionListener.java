@@ -3,17 +3,21 @@ package org.gdesign.twitch.player.gui.controller;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 import javax.swing.JOptionPane;
 
-import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.TwitchAPI;
-import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
-import org.gdesign.twitch.api.resource.users.User;
+import org.gdesign.twitch.api.TwitchAPI.Permission;
+import org.gdesign.twitch.api.exception.TwitchAPIAuthTokenInvalidException;
+import org.gdesign.twitch.api.exception.TwitchAPINoPermissionException;
+import org.gdesign.twitch.api.exception.TwitchAPINoTokenSpecifiedException;
+import org.gdesign.twitch.player.config.PlayerConfiguration;
+import org.gdesign.twitch.player.gui.controller.provider.AuthorizedStreamProvider;
 import org.gdesign.twitch.player.gui.view.MenuBar.CustomMenuItem;
 import org.gdesign.twitch.player.gui.view.layout.channel.strategy.ChannelLayoutNormal;
 import org.gdesign.twitch.player.gui.view.layout.channel.strategy.ChannelLayoutSmall;
-
+import org.gdesign.utils.ResourceManager;
 public class PlayerActionListener implements ActionListener {
 
 	private MainController controller;
@@ -24,20 +28,27 @@ public class PlayerActionListener implements ActionListener {
 	
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getActionCommand().contains("Account")){
-			String eingabe = JOptionPane.showInputDialog(null,"Please enter your twitch.tv accountname:","Change user", JOptionPane.PLAIN_MESSAGE);
+		if (e.getActionCommand().contains("Authorize")){
 			try {
-				User user = new TwitchAPI().getResource("https://api.twitch.tv/kraken/users/"+eingabe, User.class);
-				if (user.display_name.length() != 0) {
-					controller.model.getChannelListModel().removeAll();
-					controller.view.getChannelListView().sortChannels(null);
-					controller.setUsername(eingabe);	
+				TwitchAPI.authorizeApp(Permission.user_read);
+				String eingabe = JOptionPane.showInputDialog(null,"Please copy paste your access token here",
+						 "Authorize app",
+                        JOptionPane.PLAIN_MESSAGE);
+                  				
+				if (eingabe.trim().length() == 0) { 
+					throw new IOException("Token entered is wrong");
+				} else {
+					PlayerConfiguration cfg = ResourceManager.getPlayerConfiguration();
+					cfg.token = eingabe.trim();
+					ResourceManager.setPlayerConfiguration(cfg);
+					controller.setChannelProvider(new AuthorizedStreamProvider(controller));
 					controller.updateImmediatly();
 				}
-			} catch (IOException | TwitchAPIUnauthorizedAccessException e1) {
-				LogManager.getLogger().warn("User with name "+eingabe+" is not valid.\n"+e1);
-			}
 
+			} catch (IOException | URISyntaxException | TwitchAPINoTokenSpecifiedException
+					| TwitchAPINoPermissionException | TwitchAPIAuthTokenInvalidException e1) {
+				e1.printStackTrace();
+			} 
 		} else if (e.getActionCommand().contains("Small channels")) {
 			controller.view.getChannelListView().setChannelLayoutStrategy(new ChannelLayoutSmall());
 		} else if (e.getActionCommand().contains("Normal channels")) {

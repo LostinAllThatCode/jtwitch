@@ -13,6 +13,8 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -26,7 +28,6 @@ import javax.swing.UIManager;
 import javax.swing.event.MenuEvent;
 import javax.swing.event.MenuListener;
 
-
 public class MenuBar extends JPanel {
 	/**
 	 * 
@@ -36,21 +37,30 @@ public class MenuBar extends JPanel {
 	private JMenuBar menuBar;
 	private JLabel status;
 	private Point popupLocation;
+	private Timer timer;
+	
+	private Dimension normal,message;
 	
 	public MenuBar(){
 		this.setLayout(new BorderLayout());
-		
 		popupLocation = this.getLocation();
+		
+		normal = new Dimension(250,39);
+		message =  new Dimension(250,57);
+		
+		setMinimumSize(normal);
+		setPreferredSize(normal);
+		setMaximumSize(normal);
 		
 		UIManager.put("MenuItem.selectionBackground", new Color(80, 40, 180));
 		UIManager.put("MenuItem.selectionForeground", Color.WHITE);
 		UIManager.put("Menu.selectionBackground", new Color(80, 40, 180));
 		UIManager.put("Menu.selectionForeground", Color.WHITE);
 		
+		
 		setBackground(Color.DARK_GRAY.darker());
-		setMinimumSize(new Dimension(250,39));
-		setPreferredSize(new Dimension(250,39));
-		setMaximumSize(new Dimension(250,60));
+		
+
 		
 		menuBar = new JMenuBar();
 		menuBar.setBorderPainted(false);
@@ -60,7 +70,7 @@ public class MenuBar extends JPanel {
 		settings.setIcon(new ImageIcon(ClassLoader.getSystemResource("menu1_bg.png")));
 		settings.setPressedIcon(new ImageIcon(ClassLoader.getSystemResource("menu1_bg_hover.png")));
 		settings.setRolloverIcon(settings.getIcon());
-		settings.add(new CustomMenuItem("Account..."));
+		settings.add(new CustomMenuItem("Authorize jTwitchPlayer"));
 		settings.add(new CustomMenuItem(""));
 		settings.add(new CustomMenuItem("Show following streams"));
 		settings.add(new CustomMenuItem("Show featured streams"));
@@ -72,12 +82,16 @@ public class MenuBar extends JPanel {
 		menu2.setIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg.png")));
 		menu2.setPressedIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg_hover.png")));
 		menu2.setRolloverIcon(menu2.getIcon());
+		menu2.setDisabledIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg.png")));
+		menu2.setEnabled(false);
 		menuBar.add(menu2);
 		
 		CustomMenu menu3 = new CustomMenu();
 		menu3.setIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg.png")));
 		menu3.setPressedIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg_hover.png")));
 		menu3.setRolloverIcon(menu3.getIcon());
+		menu3.setDisabledIcon(new ImageIcon(ClassLoader.getSystemResource("menu_bg.png")));
+		menu3.setEnabled(false);
 		menuBar.add(menu3);
 		
 		CustomMenu menu4 = new CustomMenu();
@@ -90,18 +104,17 @@ public class MenuBar extends JPanel {
 		menu4.add(new CustomMenuItem("Normal channels"));
 		
 		menuBar.add(menu4);
-		
+
 		status = new JLabel("test");
-		status.setFont(new Font("Arial", Font.PLAIN, 10));
+		status.setFont(new Font("Lao UI",Font.PLAIN,10));
 		status.setOpaque(true);
-		status.setBackground(new Color(41,41,41));
-		status.setForeground(Color.DARK_GRAY);
-		status.setMinimumSize(new Dimension(63, 21));
-		status.setPreferredSize(new Dimension(63, 21));
-		status.setMaximumSize(new Dimension(63, 21));
+		status.setBackground(new Color(80, 40, 180));
+		status.setForeground(Color.WHITE);
+		status.setMinimumSize(new Dimension(63, 18));
+		status.setPreferredSize(new Dimension(63, 18));
+		status.setMaximumSize(new Dimension(63, 18));
 		status.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 0));
 		status.setVisible(false);
-		
 		
 		this.add(menuBar,BorderLayout.CENTER);
 		this.add(status,BorderLayout.SOUTH);
@@ -122,6 +135,39 @@ public class MenuBar extends JPanel {
 			for (Component c : menu.getMenuComponents()) {
 				CustomMenuItem i = (CustomMenuItem) c;
 				i.addActionListener(l);
+			}
+		}
+	}
+	
+	public void showMessage(String message, long time, Color c){
+		if (message == "") {
+			if (timer != null) timer.purge();
+			setMinimumSize(normal);
+			setPreferredSize(normal);
+			setMaximumSize(normal);
+		    status.setText("");
+		    status.setVisible(false);
+		} else {
+			setMinimumSize(this.message);
+			setPreferredSize(this.message);
+			setMaximumSize(this.message);
+			
+			status.setText(message);
+			status.setForeground(Color.WHITE);
+			status.setVisible(true);
+			
+			if (time != 0) {
+				timer = new Timer(); 
+				timer.schedule(new TimerTask() {
+				  @Override
+				  public void run() {
+					setMinimumSize(normal);
+					setPreferredSize(normal);
+					setMaximumSize(normal);
+				    status.setText("");
+				    status.setVisible(false);
+				  }
+				}, time);
 			}
 		}
 	}

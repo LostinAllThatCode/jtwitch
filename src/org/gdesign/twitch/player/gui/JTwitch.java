@@ -10,6 +10,7 @@ import org.gdesign.twitch.player.gui.controller.MainController;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.MainView;
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
+import org.gdesign.utils.ResourceManager;
 
 import uk.co.caprica.vlcj.discovery.NativeDiscovery;
 
@@ -21,6 +22,19 @@ public class JTwitch {
 	public static void main(String[] args) {
 		System.setProperty("awt.useSystemAAFontSettings", "true");
 		System.setProperty("swing.aatext", "true");
+		
+		try {
+			ResourceManager.initialize();
+			LivestreamerFactory.initialize();
+			
+			
+		} catch (Exception e) {
+			LogManager.getLogger().error(e);
+			JOptionPane.showMessageDialog(
+					null,"Initialzing application data failed",e.toString(),
+					JOptionPane.OK_CANCEL_OPTION);
+			System.exit(1);
+		}
 
 		if (checkDependencies()) {
 			SwingUtilities.invokeLater(new Runnable() {
@@ -30,7 +44,7 @@ public class JTwitch {
 				}
 			});
 		} else {
-			LogManager.getLogger().error("Can't find vlc/livestreamer natives. Please configure livestreamer.properties.");
+			LogManager.getLogger().error("Initialzing application data failed");
 			JOptionPane.showMessageDialog(
 							null,
 							"Can't find vlc/livestreamer natives. Please configure livestreamer.properties.\n"
@@ -56,7 +70,7 @@ public class JTwitch {
 		MainModel mainModel = new MainModel();
 		MainController controller = new MainController(mainView, mainModel);
 
-		controller.update(15000);		
+		controller.update(15000);
 	}
 
 	public static boolean checkDependencies() {

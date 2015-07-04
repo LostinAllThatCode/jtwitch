@@ -81,6 +81,17 @@ public class ChannelListView extends JPanel {
 	
 	public void showOfflineStreams(boolean show){
 		this.showOfflineStreams = show;
+		for (Component c : channelList.getComponents()) {
+			if (c.getClass().equals(ChannelView.class)){
+				ChannelView v = (ChannelView) c;
+				if (showOfflineStreams) {
+					v.setVisible(true);
+				} else {
+					if (v.online) v.setVisible(true); else v.setVisible(false);
+				}
+			}	
+		}	
+		
 	}
 	
 	public MenuBar getMenuBar(){
@@ -119,15 +130,6 @@ public class ChannelListView extends JPanel {
 					}	
 				}
 			}
-		}
-		channelList.revalidate();
-		channelList.repaint();
-	}
-
-	@Override
-	public void setEnabled(boolean enabled) {
-		for (Component c : channelList.getComponents()) {
-			c.setEnabled(enabled);
 		}
 	}
 	

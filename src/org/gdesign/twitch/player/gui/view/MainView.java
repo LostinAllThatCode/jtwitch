@@ -22,7 +22,6 @@ public class MainView extends JPanel {
 
 		add(channelListview, BorderLayout.WEST);
 		add(playerView, BorderLayout.CENTER);
-
 		frame.add(this);
 	}
 
@@ -52,5 +51,6 @@ public class MainView extends JPanel {
 	public void addActionListener(ActionListener l){
 		channelListview.addActionListener(l);
 	}
+
 
 }

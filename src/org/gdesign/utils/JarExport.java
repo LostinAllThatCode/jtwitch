@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.player.gui.JTwitch;
 
 public class JarExport {
@@ -17,32 +18,12 @@ public class JarExport {
 	 * @return The path to the exported resource
 	 * @throws Exception
 	 */
-	static public String ExportResource(String resourceName) throws Exception {// todo
-																				// move
-																				// to
-																				// Utils
+	static public String ExportResource(String resourceName, String destination) throws Exception {
 		InputStream stream = null;
 		OutputStream resStreamOut = null;
 		String jarFolder;
 		try {
-			stream = JTwitch.class.getResourceAsStream(resourceName);// note
-																		// that
-																		// each
-																		// / is
-																		// a
-																		// directory
-																		// down
-																		// in
-																		// the
-																		// "jar tree"
-																		// been
-																		// the
-																		// jar
-																		// the
-																		// root
-																		// of
-																		// the
-																		// tree"
+			stream = JarExport.class.getResourceAsStream(resourceName);
 			if (stream == null) {
 				throw new Exception("Cannot get resource \"" + resourceName
 						+ "\" from Jar file.");
@@ -53,7 +34,8 @@ public class JarExport {
 			jarFolder = new File(JTwitch.class.getProtectionDomain()
 					.getCodeSource().getLocation().toURI().getPath())
 					.getParentFile().getPath().replace('\\', '/');
-			resStreamOut = new FileOutputStream(jarFolder + resourceName);
+			LogManager.getLogger().debug(jarFolder + (destination != null ? "/"+destination : "") + resourceName);
+			resStreamOut = new FileOutputStream(jarFolder + (destination != null ? "/"+destination : "") + resourceName);
 			while ((readBytes = stream.read(buffer)) > 0) {
 				resStreamOut.write(buffer, 0, readBytes);
 			}

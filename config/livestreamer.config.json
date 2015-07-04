@@ -1,0 +1,11 @@
+{
+	"version" 					: "0.2.6",
+	"path"						: "",
+	"args"						: "--loglevel info --hds-segment-threads 5 --player-external-http --player-external-http-port",
+	"http"						: {
+		"ip"					: "127.0.0.1",
+		"port"					: 20000,
+		"range"					: 1000,
+		"quality"				: "source"
+	}
+}

@@ -1,7 +1,9 @@
 package org.gdesign.twitch.player.gui.view.layout.channel;
 
-public class ChannelLayout {
-	public String version;
+import org.gdesign.utils.GsonDataSet;
+
+
+public class ChannelLayout extends GsonDataSet{
 	public String bg_offline,bg_online,bg_hover;
 	public int offline_width,offline_height,online_width,online_height;
 	public String name_font,viewer_font,game_font;

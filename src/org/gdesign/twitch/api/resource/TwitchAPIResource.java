@@ -10,6 +10,13 @@ import java.lang.reflect.Field;
  */
 public abstract class TwitchAPIResource {
 
+	public String jsonData;
+	
+	public <T extends TwitchAPIResource> T setJsonData(String data, Class<T> clazz){
+		this.jsonData = data;
+		return clazz.cast(this);
+	}
+	
 	@Override
 	public String toString() {
 		String s = this.getClass().getSimpleName() + "[";

@@ -1,7 +1,6 @@
 package org.gdesign.twitch.api.resource.channels;
 
 import java.net.URL;
-import java.util.Date;
 
 import org.gdesign.twitch.api.resource.TwitchAPIResource;
 import org.gdesign.twitch.api.resource.root.Links;
@@ -17,8 +16,8 @@ public class Channel extends TwitchAPIResource {
 	public String language;
 	public int id;
 	public String name;
-	public Date created_at;
-	public Date updated_at;
+	public String created_at;
+	public String updated_at;
 	public URL logo;
 	public URL banner;
 	public URL video_banner;

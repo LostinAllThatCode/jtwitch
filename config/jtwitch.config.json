@@ -1,0 +1,7 @@
+{
+	"version" 					: "0.2.6",
+	"token"						: "",
+	"player"					: {
+		"volume"				: 20
+	}
+}

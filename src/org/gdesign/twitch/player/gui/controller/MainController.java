@@ -2,18 +2,17 @@ package org.gdesign.twitch.player.gui.controller;
 
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Properties;
+import java.util.Collection;
 
 import javax.swing.KeyStroke;
 
 import org.apache.logging.log4j.LogManager;
-import org.gdesign.twitch.api.TwitchAPI;
-import org.gdesign.twitch.api.exception.TwitchAPIUnauthorizedAccessException;
-import org.gdesign.twitch.api.resource.follows.Follows;
-import org.gdesign.twitch.api.resource.users.UserFollowedChannels;
+import org.gdesign.twitch.api.exception.TwitchAPIAuthTokenInvalidException;
+import org.gdesign.twitch.api.exception.TwitchAPINoPermissionException;
+import org.gdesign.twitch.api.exception.TwitchAPINoTokenSpecifiedException;
+import org.gdesign.twitch.player.config.PlayerConfiguration;
+import org.gdesign.twitch.player.gui.controller.provider.AuthorizedStreamProvider;
+import org.gdesign.twitch.player.gui.controller.provider.IChannelProvider;
 import org.gdesign.twitch.player.gui.model.ChannelModel;
 import org.gdesign.twitch.player.gui.model.MainModel;
 import org.gdesign.twitch.player.gui.view.ChannelView;
@@ -23,25 +22,23 @@ import org.gdesign.twitch.player.gui.view.layout.channellist.strategy.ChannelLis
 import org.gdesign.twitch.player.livestreamer.LivestreamerFactory;
 import org.gdesign.twitch.player.livestreamer.LivestreamerInstance;
 import org.gdesign.twitch.player.livestreamer.LivestreamerListener;
-import org.gdesign.utils.Configuration;
+import org.gdesign.utils.ResourceManager;
 
 public class MainController implements LivestreamerListener {
 
-	protected MainView view;
-	protected MainModel model;
+	public MainView view;
+	public MainModel model;
 	protected PlayerMouseListener mouseListener;
 	protected PlayerHotkeyListener hotkeyListener;
 	protected PlayerActionListener actionListener;
-	protected Properties config;
+	protected PlayerConfiguration config;
 
-	private long updateTimer	= 0;
-	private long interval 		= 0;
-	private String username		= "";
+	private long interval;
 	private Thread updateThread;
+	private IChannelProvider channelProvider;
 	
 	public MainController(MainView view, MainModel model) {
-		this.config = new Configuration("jtwitch.properties");
-		this.username = config.getProperty("username");
+		this.config = ResourceManager.getPlayerConfiguration();
 
 		this.model = model;
 
@@ -56,19 +53,29 @@ public class MainController implements LivestreamerListener {
 		this.hotkeyListener.register(KeyStroke.getKeyStroke(KeyEvent.VK_PLUS, 0));
 
 		this.view = view;
-		this.view.getEmbeddedPlayerView().setVolume(Integer.valueOf(config.getProperty("volume")));
+		this.view.getEmbeddedPlayerView().setVolume(config.player.volume);
 		this.view.getEmbeddedPlayerView().setQuality(LivestreamerFactory.getDefaultQuality());
 		this.view.getChannelListView().setChannelLayoutStrategy(new ChannelLayoutSmall());
 		this.view.getChannelListView().setChannelListLayoutStrategy(new ChannelListLayoutNormal());
 		this.view.addMouseListener(mouseListener);
 		this.view.addMouseWheelListener(mouseListener);
 		this.view.addActionListener(actionListener);
-		
+
+		try {
+			this.channelProvider = new AuthorizedStreamProvider(this);
+		} catch (Exception | TwitchAPINoPermissionException | TwitchAPINoTokenSpecifiedException | TwitchAPIAuthTokenInvalidException e) {
+			LogManager.getLogger().warn(e + "\n!No channel provider is set.");
+		}
+
 		channelviewUpdateThread();
 	}
-
-	public void setUsername(String username){
-		this.username = username;
+	
+	public IChannelProvider getChannelProvider(){
+		return this.channelProvider;
+	}
+	
+	public void setChannelProvider(IChannelProvider channelProvider) {
+		this.channelProvider = channelProvider;
 	}
 	
 	public void updateImmediatly(){
@@ -80,44 +87,21 @@ public class MainController implements LivestreamerListener {
 	
 	public void update(final long interval) {
 		this.interval 		= interval;
-		this.updateTimer 	= interval * 4;
 		
 		updateThread = new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true) {
 					try {
-						if (updateTimer / interval >= 4) {
-							List<ChannelModel> copy = new ArrayList<ChannelModel>(model.getChannelListModel().getChannels());
-							UserFollowedChannels channels = new TwitchAPI().getResource("https://api.twitch.tv/kraken/users/"+username+"/follows/channels",UserFollowedChannels.class);
-							for (Follows f : channels.follows) {
-								ChannelModel channelModel = model.getChannelListModel().getChannel(f.channel.name);
-								if (channelModel == null) {
-									model.getChannelListModel().updateChannelModel(model.getChannelListModel().createChannel(f.channel.name,f.channel.display_name));
-								} else {
-									model.getChannelListModel().updateChannelModel(channelModel);
-									copy.remove(channelModel);
-								}
-							}
-							for (ChannelModel rem : copy) model.getChannelListModel().removeChannel(rem);
-							updateTimer = 0;
+						if (channelProvider != null) {
+							channelProvider.updateChannels();
 						} else {
-							for (ChannelModel m : model.getChannelListModel().getChannels()) if (m.isOnline()) model.getChannelListModel().updateChannelModel(m);
+							LogManager.getLogger().warn("No channel provider is set.");
 						}
-						
-						model.getChannelListModel().waitForUpdate();
-						view.getChannelListView().sortChannels(model.getChannelListModel().getChannels());
 						Thread.sleep(interval);
-						updateTimer += interval;
-					} catch (TwitchAPIUnauthorizedAccessException e) {
-						LogManager.getLogger().warn(e);
-						e.printStackTrace();				
 					} catch (InterruptedException e) {
 						LogManager.getLogger().warn("Update loop terminated.");
 						break;
-					} catch (IOException e) {
-						LogManager.getLogger().warn(e);
-						e.printStackTrace();
 					}
 					
 				}
@@ -126,53 +110,42 @@ public class MainController implements LivestreamerListener {
 		updateThread.start();
 	}
 
-	private synchronized void channelviewUpdateThread() {
+	private void channelviewUpdateThread() {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
 				while (true){
-					List<ChannelModel> copy = new ArrayList<ChannelModel>(model.getChannelListModel().getChannels());
-					if (copy.size() == 0) LogManager.getLogger().debug("Obtaining data from twitch servers...");
-					for (ChannelModel m : copy) {
-						ChannelView channelView = view.getChannelListView().getChannel(m.getName());
-						if (channelView != null) {
-							channelView.setChannelGame(m.getGame())
-										.setChannelViewers(String.valueOf(m.getViewers()))
-										.setChannelAction(m.getAction())
-										.setOnline(m.isOnline());
-							channelView.doCustomLayout();
-						} else {
-							channelView = view.getChannelListView().createChannel(m.getName())
-										.setChannelName(m.getDisplayname())
-										.setChannelGame(m.getGame())
-										.setChannelViewers(String.valueOf(m.getViewers()))
-										.setChannelAction(m.getAction())
-										.setOnline(m.isOnline());
-							channelView.addMouseListener(mouseListener);
-							channelView.addMouseMotionListener(mouseListener);
-							channelView.doCustomLayout();
-						}
-						
-						if (view.getChannelListView().showOfflineStreams()){
-							channelView.setVisible(true);
-							if (m.isOnline()) {
-								channelView.setEnabled(true); 
-								channelView.setIcon(m.getIconUrl());
-							} else channelView.setEnabled(false);
-						} else {
-							if (m.isOnline()) {
-								channelView.setEnabled(true);
-								channelView.setVisible(true);
-								channelView.setIcon(m.getIconUrl());
-							} else {
-								channelView.setEnabled(false);
-								channelView.setVisible(false);
+					Collection<ChannelModel> channelmodelList = model.getChannelListModel().getChannels();
+					if (channelmodelList != null){
+						for (ChannelModel m : channelmodelList) {
+							ChannelView channelView = view.getChannelListView().getChannel(m.getName());
+							if (channelView == null) {
+								channelView = view.getChannelListView().createChannel(m.getName());
+								channelView.addMouseListener(mouseListener);
+								channelView.addMouseMotionListener(mouseListener);
 							}
-						}
-						
+							channelView.setChannelGame(m.getGame())
+								.setChannelName(m.getDisplayname())
+								.setChannelViewers(String.valueOf(m.getViewers()))
+								.setChannelAction(m.getAction())
+								.setOnline(m.isOnline())
+								.doCustomLayout()
+								.setIcon(m.getIconUrl());
+							
+							if (view.getChannelListView().showOfflineStreams()) {
+								channelView.setVisible(true);
+							} else {
+								if (m.isOnline()) channelView.setVisible(true); else channelView.setVisible(false);
+							}
+							
+							channelView.setEnabled(true);
+							channelView.validate();
+							channelView.repaint();
+						}			
 					}
+		
 					try {
-						Thread.sleep(250);
+						Thread.sleep(120);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 						break;

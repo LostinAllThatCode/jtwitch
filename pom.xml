@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.2.4</version>
+  <version>0.2.5.nightly</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -36,6 +36,11 @@
     </plugins>
   </build>
   <dependencies>
+  	<dependency>
+        <groupId>com.twelvemonkeys.imageio</groupId>
+        <artifactId>imageio-jpeg</artifactId>
+        <version>3.1.1</version> <!-- Alternatively, build your own version -->
+    </dependency>
      <dependency>
         <groupId>com.google.code.gson</groupId>
         <artifactId>gson</artifactId>
@@ -70,6 +75,11 @@
         <groupId>ch.qos.logback</groupId>
         <artifactId>logback-core</artifactId>
         <version>1.1.2</version>
+    </dependency>
+    <dependency>
+    	<groupId>commons-io</groupId>
+    	<artifactId>commons-io</artifactId>
+    	<version>1.4</version>
     </dependency>
   </dependencies>
 </project>

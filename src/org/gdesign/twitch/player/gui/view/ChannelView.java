@@ -14,7 +14,6 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 
-import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
@@ -23,6 +22,7 @@ import javax.swing.SwingConstants;
 
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.player.gui.view.layout.channel.ChannelLayoutStrategy;
+import org.gdesign.twitch.player.gui.view.layout.utils.LayoutUtils;
 import org.gdesign.utils.ResourceManager;
 
 public class ChannelView extends JPanel {
@@ -35,16 +35,18 @@ public class ChannelView extends JPanel {
 	private JLabel icon		= new JLabel("");		
 	
 	private ChannelLayoutStrategy layout;
-	private boolean online, hover, playing;
+	public boolean online, hover, playing;
+	private BufferedImage logo;
 
 	public ChannelView(String viewname, ChannelLayoutStrategy strategy) {
 		layout = strategy;		
 		doCustomLayout();
 		
+		setLayout(new GridBagLayout());
 		setDoubleBuffered(true);
 		setName(viewname);
 		setEnabled(false);
-		setLayout(new GridBagLayout());
+		setVisible(false);
 		
 		online = false;
 		hover = false;
@@ -91,14 +93,11 @@ public class ChannelView extends JPanel {
 		try {
 			if (url == null) return this;
 			if (icon.getIcon() == null){
-				BufferedImage img = ImageIO.read(url);
-				icon.setIcon(new ImageIcon(img.getScaledInstance(icon.getPreferredSize().width, icon.getPreferredSize().height, Image.SCALE_SMOOTH)));
-				LogManager.getLogger().debug("Set logo for "+this.name.getText());
+				logo = ResourceManager.getLogo(url);
+				icon.setIcon(new ImageIcon(logo.getScaledInstance(icon.getPreferredSize().width, icon.getPreferredSize().height, Image.SCALE_SMOOTH)));
 			} else {
 				if (icon.getIcon().getIconHeight() != icon.getPreferredSize().height) {
-					BufferedImage img = ImageIO.read(url);
-					icon.setIcon(new ImageIcon(img.getScaledInstance(icon.getPreferredSize().width, icon.getPreferredSize().height, Image.SCALE_SMOOTH)));
-					LogManager.getLogger().debug("Updated logo for "+this.name.getText());
+					icon.setIcon(new ImageIcon(logo.getScaledInstance(icon.getPreferredSize().width, icon.getPreferredSize().height, Image.SCALE_SMOOTH)));
 				}	
 			}
 		} catch (IOException e) {
@@ -108,17 +107,17 @@ public class ChannelView extends JPanel {
 	}
 
 	public ChannelView setChannelName(String name) {
-		if (this.name.getText().compareTo(name) != 0) ResourceManager.fixFontSize(this.name, name.toUpperCase());
+		if (this.name.getText().compareTo(name) != 0) LayoutUtils.fixFontSize(this.name, name.toUpperCase());
 		return this;
 	}
 
 	public ChannelView setChannelGame(String game) {
-		if (this.game.getText().compareTo(game) != 0) ResourceManager.fixFontSize(this.game, game);
+		if (this.game.getText().compareTo(game) != 0) LayoutUtils.fixFontSize(this.game, game);
 		return this;	
 	}
 
 	public ChannelView setChannelViewers(String viewers) {
-		if (this.viewers.getText().compareTo(viewers) != 0) ResourceManager.fixFontSize(this.viewers,(viewers.compareTo("0") == 0 ? "" : viewers));
+		if (this.viewers.getText().compareTo(viewers) != 0) LayoutUtils.fixFontSize(this.viewers,(viewers.compareTo("0") == 0 ? "" : viewers));
 		return this;
 	}
 
@@ -139,7 +138,7 @@ public class ChannelView extends JPanel {
 		return this;
 	}
 	
-	public void doCustomLayout(){
+	public ChannelView doCustomLayout(){
 		if (online) {
 			if (hover) {
 				setBackground(layout.getBackgroundColorHover());
@@ -186,7 +185,7 @@ public class ChannelView extends JPanel {
 			
 			name.setBorder(BorderFactory.createEmptyBorder(0, 8, 0, 0));
 			name.setFont(layout.getNameFont().deriveFont(layout.getNameSizeOffline()));
-			name.setForeground(ResourceManager.changeAlpha(layout.getNameFontColor(),.2f));	
+			name.setForeground(LayoutUtils.changeAlpha(layout.getNameFontColor(),.2f));	
 			
 			game.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 8));
 			game.setFont(layout.getGameFont());
@@ -198,6 +197,7 @@ public class ChannelView extends JPanel {
 			viewers.setForeground(layout.getViewerFontColor());
 		}
 		repaint();
+		return this;
 	}
 
 	@Override

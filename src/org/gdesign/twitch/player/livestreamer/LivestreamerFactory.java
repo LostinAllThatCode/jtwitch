@@ -2,13 +2,13 @@ package org.gdesign.twitch.player.livestreamer;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Properties;
 import java.util.Random;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.logging.log4j.LogManager;
+import org.gdesign.twitch.player.livestreamer.config.LivestreamerConfiguration;
 import org.gdesign.twitch.player.livestreamer.exception.LivestreamerAlreadyRunningException;
-import org.gdesign.utils.Configuration;
+import org.gdesign.utils.ResourceManager;
 import org.gdesign.utils.SystemInfo;
 import org.gdesign.utils.SystemInfo.OperatingSystem;
 
@@ -17,21 +17,21 @@ public class LivestreamerFactory {
 	protected static String LIVESTREAMER_PATH;
 
 	private static Random random;
-	private static Properties config;
+	private static LivestreamerConfiguration config;
 	private static LivestreamerInstance instance;
 	private static String quality;
 
-	static {
+	public static boolean initialize(){
 		random = new Random();
-		config = new Configuration("livestreamer.properties");
-		quality = config.getProperty("livestreamer-quality");
+		config = ResourceManager.getLivestreamerConfiguration();
+		setDefaultQuality(config.http.quality);
+		return true;
 	}
-
+	
 	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException {
 		final String stream = args[0];
 		final String quality = args[1];
-		final int randomPort = generateRandomPort(Integer.valueOf(config.getProperty("livestreamer-http-port")), 
-				Integer.valueOf(config.getProperty("livestreamer-http-port-range")));
+		final int randomPort = generateRandomPort(config.http.port,config.http.range);
 
 		final String[] cmd = (String[]) ArrayUtils.addAll(runtimeExecutable(randomPort), args);
 
@@ -57,7 +57,7 @@ public class LivestreamerFactory {
 
 	private static String[] runtimeExecutable(int port) {
 		String[] path = { LIVESTREAMER_PATH + "livestreamer" };
-		String[] args = (config.getProperty("livestreamer-args") + " " + String.valueOf(port)).split(" ");
+		String[] args = (config.args + " " + String.valueOf(port)).split(" ");
 		return (String[]) ArrayUtils.addAll(path, args);
 	}
 
@@ -100,7 +100,7 @@ public class LivestreamerFactory {
 				found = true;
 			}
 		} catch (Exception e) {
-			String configPath = config.getProperty("livestreamer");
+			String configPath = config.path;
 			try {
 				if (checkLivestreamer(configPath)) {
 					LogManager.getLogger().debug("Livestreamer location: " + configPath);

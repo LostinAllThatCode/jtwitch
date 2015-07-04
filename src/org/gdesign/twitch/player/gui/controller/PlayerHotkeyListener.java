@@ -56,6 +56,12 @@ public class PlayerHotkeyListener implements HotKeyListener {
 		default:
 			break;
 		}
-
+	}
+	
+	@Override
+	protected void finalize() throws Throwable {
+		super.finalize();
+		provider.reset();
+		provider.stop();
 	}
 }
