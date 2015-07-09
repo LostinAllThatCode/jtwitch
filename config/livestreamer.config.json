@@ -1,5 +1,5 @@
 {
-	"version" 					: "0.2.6",
+	"version" 					: "0.2.7",
 	"path"						: "",
 	"args"						: "--loglevel info --hds-segment-threads 5 --player-external-http --player-external-http-port",
 	"http"						: {

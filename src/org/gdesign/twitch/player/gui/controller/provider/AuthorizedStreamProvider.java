@@ -1,7 +1,6 @@
 package org.gdesign.twitch.player.gui.controller.provider;
 
 import java.io.IOException;
-import java.util.Collection;
 
 import org.apache.logging.log4j.LogManager;
 import org.gdesign.twitch.api.TwitchAPI;
@@ -9,51 +8,32 @@ import org.gdesign.twitch.api.TwitchAPI.Permission;
 import org.gdesign.twitch.api.exception.TwitchAPIAuthTokenInvalidException;
 import org.gdesign.twitch.api.exception.TwitchAPINoPermissionException;
 import org.gdesign.twitch.api.exception.TwitchAPINoTokenSpecifiedException;
-import org.gdesign.twitch.api.resource.streams.Stream;
-import org.gdesign.twitch.api.resource.users.UserFollowedStreams;
+import org.gdesign.twitch.api.resource.streams.StreamList;
 import org.gdesign.twitch.player.gui.controller.MainController;
-import org.gdesign.twitch.player.gui.model.ChannelModel;
+import org.gdesign.twitch.player.gui.controller.provider.interfaces.IStreamProvider;
 
-public class AuthorizedStreamProvider extends DefaultChannelProvider {
-
+public class AuthorizedStreamProvider extends DefaultStreamProvider implements IStreamProvider {
+	
 	public AuthorizedStreamProvider(MainController controller) throws IOException, TwitchAPINoTokenSpecifiedException, TwitchAPINoPermissionException, TwitchAPIAuthTokenInvalidException {
 		super(controller);
 		TwitchAPI.setAuthToken(playerConfig.token);
-		if (TwitchAPI.authorized()) {
-			if (TwitchAPI.hasPermisson(Permission.user_read)) {
-				LogManager.getLogger().trace(this.getClass().getSimpleName() + " initialized.");
-			}
-		} 
+		if (TwitchAPI.hasPermisson(Permission.user_read)) {
+			LogManager.getLogger().debug("Authentication test successful.");
+		}
 	}
 
 	@Override
-	public void updateChannels() {
+	public void updateStreamList() {
+		LogManager.getLogger().debug("Updating channelmodels...");
 		try {
-			UserFollowedStreams onlineFollowedStreams = TwitchAPI.getResource("/streams/followed", UserFollowedStreams.class);
-			if (onlineFollowedStreams._total != 0) {
-				for (final Stream stream : onlineFollowedStreams.streams) {
-					new Thread(new Runnable() {
-						
-						@Override
-						public void run() {
-							ChannelModel channelModel = controller.model.getChannelListModel().getChannel(stream.channel.name);
-							if (channelModel == null){
-								channelModel = controller.model.getChannelListModel().createChannel(stream.channel.name);
-								channelModel.setDisplayname(stream.channel.display_name);
-								channelModel.setIconUrl(stream.channel.logo);
-							}
-							if (controller.model.getChannelListModel().updateChannelModel(channelModel)){
-								Collection<ChannelModel> sortedChannels = controller.model.getChannelListModel().sortChannels();
-								controller.view.getChannelListView().sortChannels(sortedChannels);
-							}
-						}
-					}).start();
-				}
-			} else LogManager.getLogger().debug("No one you follow is streaming right now.");
+			StreamList streamList = TwitchAPI.getResource("/streams/followed", StreamList.class, 1000);
+			if (streamList._total != 0) controller.view.getStreamList().setStreamList(streamList);
 		} catch (IOException e) {
-			e.printStackTrace();
+			LogManager.getLogger().warn(e);
+		} catch (InterruptedException e) {
+			LogManager.getLogger().debug("Provider interrupted.");
 		}
-		System.gc();
+		LogManager.getLogger().debug("Done updating.");
 	}
 
 }

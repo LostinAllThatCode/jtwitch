@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import org.apache.logging.log4j.LogManager;
-import org.gdesign.twitch.player.gui.JTwitch;
+import org.gdesign.twitch.JTwitchPlayer;
 
 public class JarExport {
 
@@ -31,7 +31,7 @@ public class JarExport {
 
 			int readBytes;
 			byte[] buffer = new byte[4096];
-			jarFolder = new File(JTwitch.class.getProtectionDomain()
+			jarFolder = new File(JTwitchPlayer.class.getProtectionDomain()
 					.getCodeSource().getLocation().toURI().getPath())
 					.getParentFile().getPath().replace('\\', '/');
 			LogManager.getLogger().debug(jarFolder + (destination != null ? "/"+destination : "") + resourceName);

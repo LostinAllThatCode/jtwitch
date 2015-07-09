@@ -1,0 +1,27 @@
+{
+	"version" 					: "0.2.7",
+	"bg_color"					: {"value": "-12566464","falpha":0.0},
+	"scrollbar_v_color"			: {"value": "-13882324","falpha":0.0},
+	"scrollbar_v_dim"			: {"width":5,"height":9999},
+	"scrollbar_h_color"			: {"value": "-13882324","falpha":0.0},
+	"scrollbar_h_dim"			: {"width":0,"height":0},
+	"scrollbar_unit_inc"		: 10,
+	"stream"					: {
+		"dim" 						: {"width":250,"height":32} ,
+		"cursor"					: {"type":12, "name":"Handcursor"},
+		"bg_color" 					: {"value": "-11523916","falpha":0.0},
+		"bg_color_hover"			: {"value": "-1","falpha":0.0},
+		"name_font"					: {"name":"GnuolaneRg-Regular","style":0,"size":16,"pointSize":16.0,"fontSerializedDataVersion":1},
+		"name_fg_color"				: {"value": "-1","falpha":0.0},
+		"name_fg_color_hover"		: {"value": "-11523916","falpha":0.0},
+		"name_border"				: {"left":8,"right":0,"top":4,"bottom":0},
+		"game_font"					: {"name":"Arial","style":1,"size":10,"pointSize":10.0,"fontSerializedDataVersion":1},
+		"game_fg_color"				: {"value": "2147483647","falpha":0.0},
+		"game_fg_color_hover"		: {"value": "-11523916","falpha":0.0},
+		"game_border"				: {"left":8,"right":8,"top":0,"bottom":2},
+		"viewers_font"				: {"name":"Arial","style":1,"size":10,"pointSize":10.0,"fontSerializedDataVersion":1},
+		"viewers_fg_color"			: {"value": "-1","falpha":0.0},
+		"viewers_fg_color_hover"	: {"value": "-11523916","falpha":0.0},
+		"viewers_border"			: {"left":0,"right":8,"top":4,"bottom":0}
+	}
+}

@@ -20,7 +20,7 @@ public class LivestreamerInstance extends Thread implements Runnable {
 
 	public LivestreamerInstance(String... cmd) {
 		this.listener = new ArrayList<LivestreamerListener>();
-		this.localhost = "http://127.0.0.1";
+		this.localhost = "";
 		this.cmd = cmd;
 		this.stream = "";
 		this.port = 0;
@@ -30,6 +30,7 @@ public class LivestreamerInstance extends Thread implements Runnable {
 	public void stopStream() {
 		interrupt();
 		process.destroy();
+		LivestreamerFactory.stopped();
 	}
 
 	public void addListener(LivestreamerListener l) {
@@ -50,7 +51,7 @@ public class LivestreamerInstance extends Thread implements Runnable {
 			while (((ch = reader.read()) != -1) && !isInterrupted()) {
 				line += (char) ch;
 				if (line.startsWith("[cli]") && line.endsWith("\n")) {
-					String output = line.substring(5, line.indexOf('\n'));
+					String output = line.substring(5, line.indexOf('\n')-1);
 					LogManager.getLogger().trace(output);
 					if (output.contains(this.localhost + ":" + port))
 						for (LivestreamerListener l : listener) l.streamStarted(this);

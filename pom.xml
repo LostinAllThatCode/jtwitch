@@ -2,7 +2,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>jtwitch</groupId>
   <artifactId>jtwitch</artifactId>
-  <version>0.2.6</version>
+  <version>0.2.7</version>
   <build>
     <sourceDirectory>src</sourceDirectory>
     <plugins>
@@ -23,7 +23,7 @@
         		<archive>
           			<manifest>
           				<addClasspath>true</addClasspath>
-            			<mainClass>org.gdesign.twitch.player.gui.JTwitch</mainClass>
+            			<mainClass>org.gdesign.twitch.JTwitchPlayer</mainClass>
                 		<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
                 		<addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
           			</manifest>
@@ -36,6 +36,18 @@
     </plugins>
   </build>
   <dependencies>
+	 <dependency>
+	  <groupId>org.webbitserver</groupId>
+	  <artifactId>webbit</artifactId>
+	  <version>0.4.6</version>
+	  <type>jar</type>
+	</dependency>
+	<dependency>
+	  <groupId>org.jboss.netty</groupId>
+	  <artifactId>netty</artifactId>
+	  <version>3.2.7.Final</version>
+	  <type>jar</type>
+	</dependency>
   	<dependency>
         <groupId>com.twelvemonkeys.imageio</groupId>
         <artifactId>imageio-jpeg</artifactId>

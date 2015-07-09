@@ -124,9 +124,12 @@ public class ResourceManager {
 		return null;
 	}
 	
+	/** 
+	 * Only works in compilied version. As in the runnable jar file.
+	 * @param cfg
+	 */
 	public static void setPlayerConfiguration(PlayerConfiguration cfg){
 		try {
-			LogManager.getLogger().debug(cfg);
 			File cfgFile = new File("./resources/configs/jtwitch.config.json");
 	        if (cfgFile.exists()) {
 	        	LogManager.getLogger().debug(cfg);
@@ -139,7 +142,21 @@ public class ResourceManager {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		LogManager.getLogger().debug(cfg);
+	}
+	
+	public static void setLivestreamerConfiguration(LivestreamerConfiguration cfg){
+		try {
+			File cfgFile = new File("./resources/configs/livestreamer.config.json");
+	        if (cfgFile.exists()) {
+	            FileOutputStream fOut = new FileOutputStream(cfgFile);
+	            OutputStreamWriter myOutWriter =new OutputStreamWriter(fOut);
+	         	myOutWriter.append(new Gson().toJson(cfg));
+	            myOutWriter.close();
+	            fOut.close();
+	        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static LivestreamerConfiguration getLivestreamerConfiguration(){
@@ -160,17 +177,21 @@ public class ResourceManager {
 		return null;
 	}
 	
-	public static Reader getLayout(String name){
+	public static <T> T getLayout(String name, Class<T> clazz){
 		if (isRunningFromJar()) {
 			try {
-			File layout = new File("./resources/layouts/"+name);
-			if (layout.exists()) return new InputStreamReader(new FileInputStream(layout));
+				File layout = new File("./resources/layouts/"+name);
+				if (layout.exists()) {
+					Reader reader = new InputStreamReader(new FileInputStream(layout));
+					return new Gson().fromJson(reader, clazz);
+				}
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			}
 		} else {
 			InputStream in = ClassLoader.getSystemResourceAsStream(name);
-			return new InputStreamReader(in);
+			Reader reader = new InputStreamReader(in);
+			return new Gson().fromJson(reader, clazz);
 		}
 		return null;
 	}

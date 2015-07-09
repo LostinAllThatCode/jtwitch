@@ -1,12 +1,10 @@
 package org.gdesign.twitch.api;
 
-import java.awt.Desktop;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
-import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.List;
@@ -17,16 +15,20 @@ import org.gdesign.twitch.api.exception.TwitchAPINoPermissionException;
 import org.gdesign.twitch.api.exception.TwitchAPINoTokenSpecifiedException;
 import org.gdesign.twitch.api.resource.TwitchAPIResource;
 import org.gdesign.twitch.api.resource.builder.DefaultResourceBuilder;
+import org.gdesign.twitch.api.resource.builder.LimitedResourceBuilder;
+import org.gdesign.twitch.api.resource.follows.Follow;
 import org.gdesign.twitch.api.resource.root.Root;
+import org.gdesign.twitch.api.web.TwitchAPIAuthService;
 
 import com.google.gson.JsonSyntaxException;
 
 public class TwitchAPI {
-	private static final String API_ROOT_URL 	= "https://api.twitch.tv/kraken";
-	private static final String CLIENT_ID		= "1l1xxqg16ehfn68qim2lpw88qqg072d";
-	private static final String REDIRECT_URI	= "http://jtwitchplayer.g-design.org";
+	public static final String API_ROOT_URL 	= "https://api.twitch.tv/kraken";
+	public static final String CLIENT_ID		= "1l1xxqg16ehfn68qim2lpw88qqg072d";
+	public static final String REDIRECT_URI		= "http://jtwitchplayer.g-design.org";
 
 	private static String oAuthToken = "";
+	private static Root authedToken = null;
 	
 	/**
 	 * Permissions from justin.tv/twitch.tv api. 
@@ -48,7 +50,9 @@ public class TwitchAPI {
 	 * @author agaida
 	 */
 	public static enum Permission {
-		user_read, user_blocks_edit, user_blocks_read, user_follows_edit, channel_read, channel_editor, channel_commercial, channel_stream, channel_subscriptions, user_subscriptions, channel_check_subscription, chat_login
+		user_read, user_blocks_edit, user_blocks_read, user_follows_edit, channel_read,
+		channel_editor, channel_commercial, channel_stream, channel_subscriptions,
+		user_subscriptions, channel_check_subscription, chat_login
 	}
 	
 	public static enum HttpType {
@@ -66,6 +70,25 @@ public class TwitchAPI {
 		oAuthToken = token.trim();
 	}
 
+	public static String getUsername() throws IOException{
+		return authedToken.token.user_name;
+	}
+	
+	public static boolean isFollowing(String channelName) throws IOException{
+		Follow follow = TwitchAPI.getResource("/users/"+getUsername()+"/follows/channels/"+channelName, Follow.class);
+		return (follow != null);
+	}
+	
+	public static void unfollowStream(String channelName) throws IOException{
+		String url = TwitchAPI.API_ROOT_URL+"/users/"+getUsername()+"/follows/channels/"+channelName;
+		TwitchAPI.send(url, HttpType.DELETE);
+	}
+
+	public static void followStream(String channelName) throws IOException{
+		String url = TwitchAPI.API_ROOT_URL+"/users/"+getUsername()+"/follows/channels/"+channelName;
+		TwitchAPI.send(url, HttpType.PUT);
+	}
+	
 	/**
 	 * Returns a TwitchAPIResource object which includes its defined datasets.
 	 * 
@@ -82,6 +105,25 @@ public class TwitchAPI {
 	 */
 	public static <T extends TwitchAPIResource> T getResource(String url, Class<T> clazz) throws IOException {
 		return DefaultResourceBuilder.buildResource(API_ROOT_URL+url, clazz);
+	}
+	
+	/**
+	 * Returns a TwitchAPIResource object which includes its defined datasets.
+	 * 
+	 * @param url
+	 *            URL to twitch api resource. Example:
+	 *            https://api.twitch.tv/kraken/users/its1z0 for User.class
+	 * @param clazz
+	 *            Class which specifies how the request json object from @param
+	 *            url should be wrapped
+	 * @return Returns TwitchAPIResource as specified @param clazz
+	 * @throws IOException
+	 * @throws InterruptedException 
+	 * @throws TwitchAPIUnauthorizedAccessException
+	 * @throws JsonSyntaxException
+	 */
+	public static <T extends TwitchAPIResource> T getResource(String url, Class<T> clazz, int count) throws IOException, JsonSyntaxException, InterruptedException {
+		return LimitedResourceBuilder.buildResource(API_ROOT_URL+url, clazz, count);
 	}
 	
 	/**
@@ -106,11 +148,11 @@ public class TwitchAPI {
 		if (httpCon.getDoInput()) {
 			BufferedReader reader = new BufferedReader(new InputStreamReader(httpCon.getInputStream()));
 			String input = reader.readLine();
+			LogManager.getLogger().trace(input);
 			return input;
 		}
 		
-		LogManager.getLogger().debug(httpCon.getResponseCode());
-		return "";
+		throw new IOException("No data received from "+urlString);
 	}
 	
 	public static String send(String urlString, HttpType type) throws IOException {
@@ -147,12 +189,14 @@ public class TwitchAPI {
 	 * @throws JsonSyntaxException
 	 */
 	public static boolean authorized() throws IOException, TwitchAPINoTokenSpecifiedException, TwitchAPIAuthTokenInvalidException {
-		if (oAuthToken == "" || oAuthToken == null) throw new TwitchAPINoTokenSpecifiedException();
-		Root root = getResource("", Root.class);
-		if (root != null) {
-			if (!root.token.valid) throw new TwitchAPIAuthTokenInvalidException();
-		}
-		return true;
+		if (authedToken == null) {
+			if (oAuthToken == "" || oAuthToken == null) throw new TwitchAPINoTokenSpecifiedException();
+			Root root = getResource("", Root.class);
+			if (root != null) {
+				if (!root.token.valid) throw new TwitchAPIAuthTokenInvalidException();
+			}	
+			authedToken = root;
+		} return authedToken.token.valid;
 	}
 
 	/**
@@ -166,7 +210,7 @@ public class TwitchAPI {
 	 * @throws JsonSyntaxException
 	 */
 	public static List<String> getPermissions() throws IOException, TwitchAPINoTokenSpecifiedException, TwitchAPIAuthTokenInvalidException {
-		if (authorized()) return getResource("", Root.class).token.authorization.scopes;
+		if (authorized()) return authedToken.token.authorization.scopes;
 		else return null;
 	}
 	
@@ -198,7 +242,12 @@ public class TwitchAPI {
 		return true;
 	}
 	
-	private static String parsePermissonToString(Permission... p){
+	/**
+	 * Parses permission array into an url-encoded string. Replaces whitespaces with %20.
+	 * @param p
+	 * @return
+	 */
+	public static String parsePermissonToURLString(Permission... p){
 		String pString = "";
 		for (Permission permission : p){
 			pString += permission.toString()+"%20";
@@ -207,18 +256,17 @@ public class TwitchAPI {
 		else return pString.substring(0,pString.length()-3);
 	}
 	
-	public static void authorizeApp(Permission... permissons) throws IOException, URISyntaxException{
-		String request = "https://api.twitch.tv/kraken/oauth2/authorize"+
-		    "?response_type=token"+
-		    "&client_id=%clientid%"+
-		    "&redirect_uri=%redirecturi%"+
-		    "&scope=%scope%";
-		
-		request = request.replace("%clientid%", CLIENT_ID);
-		request = request.replace("%redirecturi%", REDIRECT_URI);
-		request = request.replace("%scope%", parsePermissonToString(permissons));
-		
-		Desktop desktop = Desktop.getDesktop();
-		if (desktop != null) desktop.browse(new URI(request));
+	/**
+	 * Authorizing service. Returns token if successful.
+	 * @param permissons
+	 * @return
+	 * @throws IOException
+	 * @throws URISyntaxException
+	 * @throws InterruptedException
+	 */
+	public static String authorizeApp(final Permission... permissons) throws IOException, URISyntaxException, InterruptedException{
+		TwitchAPIAuthService authService = new TwitchAPIAuthService(permissons);	
+		if (authService.isAuthorized()) return authService.getToken();
+		return "";
 	}
 }

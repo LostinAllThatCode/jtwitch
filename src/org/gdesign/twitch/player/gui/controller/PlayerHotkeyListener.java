@@ -28,30 +28,30 @@ public class PlayerHotkeyListener implements HotKeyListener {
 	public void onHotKey(HotKey hotKey) {
 		switch (hotKey.keyStroke.getKeyCode()) {
 		case KeyEvent.VK_ESCAPE:
-			if (controller.view.getEmbeddedPlayerView().isFullscreen()) {
-				controller.view.getEmbeddedPlayerView().toggleFullscreen();
-				controller.view.getChannelListView().setVisible(true);
-				controller.view.getChannelListView().getMenuBar().setVisible(true);
+			if (controller.view.getEmbeddedPlayer().isFullscreen()) {
+				controller.view.getEmbeddedPlayer().toggleFullscreen();
+				controller.view.getStreamList().setVisible(true);
+				controller.view.getStreamList().getStreamMenuBar().setVisible(true);
 			}
 			break;
 		case KeyEvent.VK_ENTER:
-			if (!controller.view.getEmbeddedPlayerView().isFullscreen()) {
-				controller.view.getEmbeddedPlayerView().toggleFullscreen();
-				controller.view.getChannelListView().setVisible(false);
-				controller.view.getChannelListView().getMenuBar().setVisible(false);
+			if (!controller.view.getEmbeddedPlayer().isFullscreen()) {
+				controller.view.getEmbeddedPlayer().toggleFullscreen();
+				controller.view.getStreamList().setVisible(false);
+				controller.view.getStreamList().getStreamMenuBar().setVisible(false);
 			} else {
-				controller.view.getEmbeddedPlayerView().toggleFullscreen();
-				controller.view.getChannelListView().setVisible(true);
-				controller.view.getChannelListView().getMenuBar().setVisible(true);
+				controller.view.getEmbeddedPlayer().toggleFullscreen();
+				controller.view.getStreamList().setVisible(true);
+				controller.view.getStreamList().getStreamMenuBar().setVisible(true);
 			}
 			break;
 		case KeyEvent.VK_SUBTRACT:
 		case KeyEvent.VK_MINUS:
-			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() - 10);
+			controller.view.getEmbeddedPlayer().setVolume(controller.view.getEmbeddedPlayer().getVolume() - 10);
 			break;
 		case KeyEvent.VK_ADD:
 		case KeyEvent.VK_PLUS:
-			controller.view.getEmbeddedPlayerView().setVolume(controller.view.getEmbeddedPlayerView().getVolume() + 10);
+			controller.view.getEmbeddedPlayer().setVolume(controller.view.getEmbeddedPlayer().getVolume() + 10);
 			break;
 		default:
 			break;

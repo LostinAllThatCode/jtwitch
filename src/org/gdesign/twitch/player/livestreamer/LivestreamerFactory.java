@@ -2,6 +2,8 @@ package org.gdesign.twitch.player.livestreamer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -20,12 +22,18 @@ public class LivestreamerFactory {
 	private static LivestreamerConfiguration config;
 	private static LivestreamerInstance instance;
 	private static String quality;
+	private static List<LivestreamerListener> listeners;
 
 	public static boolean initialize(){
 		random = new Random();
 		config = ResourceManager.getLivestreamerConfiguration();
+		listeners = new ArrayList<LivestreamerListener>();
 		setDefaultQuality(config.http.quality);
 		return true;
+	}
+	
+	public static void addListener(LivestreamerListener l) {
+		listeners.add(l);
 	}
 	
 	public static LivestreamerInstance startInstance(String... args) throws LivestreamerAlreadyRunningException {
@@ -47,8 +55,15 @@ public class LivestreamerFactory {
 		instance.setChannel(stream.substring(10, stream.length()));
 		instance.setPort(randomPort);
 		instance.setQuality(quality);
+		instance.setLocalhost("http://"+config.http.ip);
+		for (LivestreamerListener l : listeners) instance.addListener(l);
 		instance.start();
 		return instance;
+	}
+	
+	public static String getRunningStreamsChannelname(){
+		if (instance != null) return instance.getChannel();
+		else return "";
 	}
 
 	private static int generateRandomPort(int start, int range) {
@@ -68,6 +83,10 @@ public class LivestreamerFactory {
 			return (instance.getStream().compareTo(stream) == 0 && instance.isAlive());
 		}
 	}
+	
+	protected static void stopped(){
+		instance = null;
+	}
 
 	public static void stopInstance(LivestreamerInstance live) {
 		live.stopStream();
@@ -75,7 +94,7 @@ public class LivestreamerFactory {
 	}
 
 	public static void setDefaultQuality(String q) {
-		quality = q;
+		quality = q.toLowerCase();
 	}
 
 	public static String getDefaultQuality() {
